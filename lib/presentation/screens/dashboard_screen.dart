@@ -461,8 +461,9 @@ import '../bloc/dashboard/dashboard_state.dart';
 import '../widgets/app_scaffold.dart';
 import '../widgets/dashboard_content_cards.dart';
 import '../widgets/dashboard_summary_card.dart';
+
 class DashboardScreen extends StatefulWidget {
-    final ValueChanged<int>? onNavItemSelected;
+  final ValueChanged<int>? onNavItemSelected;
   const DashboardScreen({super.key, this.onNavItemSelected});
 
   @override
@@ -555,7 +556,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return AppScaffold(
           title: AppStrings.dashboardTitle,
           activeNavIndex: 0,
-           onNavItemSelected: widget.onNavItemSelected,
+          onNavItemSelected: widget.onNavItemSelected,
           isDarkMode: isDarkMode,
           onThemeToggle: () {
             context.read<DashboardBloc>().add(const ToggleDashboardTheme());
@@ -564,7 +565,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             _handleQuickAction(context, 'Notifications Panel (6 Unread)');
           },
           onProfilePressed: () {
-            _handleQuickAction(context, 'Profile: Syed Imran (Admin)');
+            _handleQuickAction(context, 'Profile: Yuvi (Admin)');
           },
           onSignOut: () => _handleSignOut(context),
           body: SingleChildScrollView(

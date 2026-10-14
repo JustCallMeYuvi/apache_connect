@@ -10,6 +10,8 @@ class AppBottomNav extends StatelessWidget {
   final ValueChanged<int>? onIndexChanged;
   final VoidCallback? onMorePressed;
   final bool isDarkMode;
+  final String? alertsBadgeText;
+  final String? chatsBadgeText;
 
   const AppBottomNav({
     super.key,
@@ -17,6 +19,8 @@ class AppBottomNav extends StatelessWidget {
     this.onIndexChanged,
     this.onMorePressed,
     this.isDarkMode = false,
+      this.alertsBadgeText = '2',
+    this.chatsBadgeText = '186',
   });
 
   void _handleItemTap(BuildContext context, int index) {
@@ -37,13 +41,15 @@ class AppBottomNav extends StatelessWidget {
       case 2:
         Navigator.of(context).pushReplacementNamed(AppRoutes.documents);
         break;
-      case 3:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Alerts (398 unread)'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+      // case 3:
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(
+      //       content: Text('Alerts (398 unread)'),
+      //       behavior: SnackBarBehavior.floating,
+      //     ),
+      //   );
+       case 3:
+        Navigator.of(context).pushReplacementNamed(AppRoutes.notifications);
         break;
       case 4:
         if (onMorePressed != null) {
@@ -94,7 +100,8 @@ class AppBottomNav extends StatelessWidget {
               index: 1,
               icon: Icons.chat_bubble_outline_rounded,
               label: AppStrings.bottomChats,
-              badgeText: '204',
+              // badgeText: '204',
+              badgeText: chatsBadgeText,
             ),
             _buildNavItem(
               context: context,
@@ -107,7 +114,8 @@ class AppBottomNav extends StatelessWidget {
               index: 3,
               icon: Icons.notifications_none_rounded,
               label: AppStrings.bottomAlerts,
-              badgeText: '398',
+              // badgeText: '398',
+               badgeText: alertsBadgeText,
             ),
             _buildNavItem(
               context: context,

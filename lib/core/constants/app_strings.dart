@@ -95,4 +95,21 @@
     static const String categoryDropdownLabel = 'Category';
     static const String fileTypeLabel = 'File Type';
     static const String upload = 'Upload';
+
+    
+  // Notifications Screen Strings
+  static const String notificationsTitle = 'Notifications';
+  static const String markAllRead = 'Mark all read';
+  static const String userMention = 'User mention';
+  static const String directMessage = 'Direct message';
+  static const String open = 'Open';
+  static const String markUnread = 'Mark unread';
+  static const String markRead = 'Mark read';
+  static const String delete = 'Delete';
+  static const String deleteNotification = 'Delete notification';
+  static const String noNotificationsFound = 'No notifications found';
+  static const String selectNotification = 'Select a notification';
+  static const String selectNotificationSubtitle = 'Choose an alert from the list to view its complete details';
+  static const String allNotificationsReadSuccess = 'All notifications marked as read';
+  static const String notificationDeletedSuccess = 'Notification deleted successfully';
   }

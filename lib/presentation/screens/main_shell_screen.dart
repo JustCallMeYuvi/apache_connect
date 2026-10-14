@@ -44,8 +44,7 @@
 //   }
 // }
 
-
-
+import 'package:apache_connect/presentation/screens/notifications_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'dashboard_screen.dart';
@@ -66,6 +65,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
     DashboardScreen(onNavItemSelected: _onNavItemSelected),
     MessagesScreen(onNavItemSelected: _onNavItemSelected),
     DocumentsScreen(onNavItemSelected: _onNavItemSelected),
+    NotificationsScreen(onNavItemSelected: _onNavItemSelected),
   ];
 
   void _onNavItemSelected(int index) {

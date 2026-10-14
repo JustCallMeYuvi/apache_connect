@@ -9,12 +9,17 @@ class AppSidebar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int>? onItemSelected;
   final VoidCallback? onSignOut;
+    final String? notificationBadgeText;
+  final String? messagesBadgeText;
+
 
   const AppSidebar({
     super.key,
     required this.selectedIndex,
     this.onItemSelected,
     this.onSignOut,
+      this.notificationBadgeText = '1',
+    this.messagesBadgeText = '186',
   });
 
   void _handleItemTap(BuildContext context, int index) {
@@ -35,14 +40,17 @@ class AppSidebar extends StatelessWidget {
       case 2:
         Navigator.of(context).pushReplacementNamed(AppRoutes.documents);
         break;
-      case 3:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Notifications (398 unread)'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+      // case 3:
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(
+      //       content: Text('Notifications (398 unread)'),
+      //       behavior: SnackBarBehavior.floating,
+      //     ),
+      //   );
+            case 3:
+        Navigator.of(context).pushReplacementNamed(AppRoutes.notifications);
         break;
+      
       default:
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -83,7 +91,9 @@ class AppSidebar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primaryOrange.withOpacity(0.3),
+                        // color: AppColors.primaryOrange.withOpacity(0.3),
+                        color: AppColors.primaryOrange.withAlpha(77),
+
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -130,7 +140,8 @@ class AppSidebar extends StatelessWidget {
                   index: 1,
                   icon: Icons.chat_bubble_outline_rounded,
                   label: AppStrings.navMessages,
-                  badgeText: '204',
+                  // badgeText: '204',
+                   badgeText: messagesBadgeText,
                 ),
                 _buildNavItem(
                   context: context,
@@ -143,7 +154,8 @@ class AppSidebar extends StatelessWidget {
                   index: 3,
                   icon: Icons.notifications_none_rounded,
                   label: AppStrings.navNotifications,
-                  badgeText: '398',
+                  // badgeText: '398',
+                  badgeText: notificationBadgeText,
                 ),
 
                 const SizedBox(height: 20),
@@ -236,7 +248,7 @@ class AppSidebar extends StatelessWidget {
                       ),
                       alignment: Alignment.center,
                       child: const Text(
-                        'SI',
+                        'Yuvi',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
@@ -245,12 +257,12 @@ class AppSidebar extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Expanded(
+                    const Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
-                            'Syed Imran',
+                            'Yuvaraj',
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
@@ -276,10 +288,10 @@ class AppSidebar extends StatelessWidget {
                 InkWell(
                   onTap: () => _handleSignOut(context),
                   borderRadius: BorderRadius.circular(8),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 4),
                     child: Row(
-                      children: const [
+                      children: [
                         Icon(
                           Icons.logout_rounded,
                           color: AppColors.sidebarText,

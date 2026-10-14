@@ -32,6 +32,7 @@ class AppScaffold extends StatefulWidget {
   final ValueChanged<int>? onNavItemSelected;
   final List<Widget>? actions;
   final Color? backgroundColor;
+   final int notificationCount;
 
   const AppScaffold({
     super.key,
@@ -48,6 +49,7 @@ class AppScaffold extends StatefulWidget {
     this.onNavItemSelected,
     this.actions,
     this.backgroundColor,
+    this.notificationCount = 2,
   });
 
   @override

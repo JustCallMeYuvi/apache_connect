@@ -37,17 +37,25 @@
 
 import 'package:apache_connect/data/datasources/documents_remote_data_source.dart';
 import 'package:apache_connect/data/datasources/messages_remote_data_source.dart';
+import 'package:apache_connect/data/datasources/notifications_remote_data_source.dart';
 import 'package:apache_connect/data/repositories/documents_repository_impl.dart';
 import 'package:apache_connect/data/repositories/messages_repository_impl.dart';
+import 'package:apache_connect/data/repositories/notifications_repository_impl.dart';
 import 'package:apache_connect/domain/repositories/documents_repository.dart';
 import 'package:apache_connect/domain/repositories/messages_repository.dart';
+import 'package:apache_connect/domain/repositories/notifications_repository.dart';
 import 'package:apache_connect/domain/usecases/create_group_usecase.dart';
+import 'package:apache_connect/domain/usecases/delete_notification_usecase.dart';
 import 'package:apache_connect/domain/usecases/get_conversations_usecase.dart';
 import 'package:apache_connect/domain/usecases/get_documents_usecase.dart';
+import 'package:apache_connect/domain/usecases/get_notifications_usecase.dart';
+import 'package:apache_connect/domain/usecases/mark_all_notifications_read_usecase.dart';
+import 'package:apache_connect/domain/usecases/mark_notification_read_usecase.dart';
 import 'package:apache_connect/domain/usecases/send_message_usecase.dart';
 import 'package:apache_connect/domain/usecases/upload_document_usecase.dart';
 import 'package:apache_connect/presentation/bloc/documents/documents_bloc.dart';
 import 'package:apache_connect/presentation/bloc/messages/messages_bloc.dart';
+import 'package:apache_connect/presentation/bloc/notifications/notifications_bloc.dart';
 import 'package:get_it/get_it.dart';
 import '../../data/datasources/auth_remote_data_source.dart';
 import '../../data/datasources/dashboard_remote_data_source.dart';
@@ -79,6 +87,10 @@ Future<void> initDependencies() async {
     sl.registerLazySingleton<DocumentsRemoteDataSource>(
     () => DocumentsRemoteDataSourceImpl(),
   );
+   sl.registerLazySingleton<NotificationsRemoteDataSource>(
+    () => NotificationsRemoteDataSourceImpl(),
+  );
+
 
   // 2. Repositories
   sl.registerLazySingleton<AuthRepository>(
@@ -92,6 +104,9 @@ Future<void> initDependencies() async {
   );
   sl.registerLazySingleton<DocumentsRepository>(
     () => DocumentsRepositoryImpl(remoteDataSource: sl()),
+  );
+   sl.registerLazySingleton<NotificationsRepository>(
+    () => NotificationsRepositoryImpl(remoteDataSource: sl()),
   );
   // 3. Use Cases
   sl.registerLazySingleton<LoginUseCase>(
@@ -118,6 +133,20 @@ Future<void> initDependencies() async {
   );
 
 
+  sl.registerLazySingleton<GetNotificationsUseCase>(
+    () => GetNotificationsUseCase(sl()),
+  );
+  sl.registerLazySingleton<MarkNotificationReadUseCase>(
+    () => MarkNotificationReadUseCase(sl()),
+  );
+  sl.registerLazySingleton<MarkAllNotificationsReadUseCase>(
+    () => MarkAllNotificationsReadUseCase(sl()),
+  );
+  sl.registerLazySingleton<DeleteNotificationUseCase>(
+    () => DeleteNotificationUseCase(sl()),
+  );
+
+
   // 4. BLoCs (Factory so fresh state is maintained per session)
   sl.registerFactory<LoginBloc>(
     () => LoginBloc(loginUseCase: sl()),
@@ -138,6 +167,16 @@ Future<void> initDependencies() async {
     () => DocumentsBloc(
       getDocumentsUseCase: sl(),
       uploadDocumentUseCase: sl(),
+    ),
+  );
+
+  
+  sl.registerFactory<NotificationsBloc>(
+    () => NotificationsBloc(
+      getNotificationsUseCase: sl(),
+      markNotificationReadUseCase: sl(),
+      markAllNotificationsReadUseCase: sl(),
+      deleteNotificationUseCase: sl(),
     ),
   );
 }

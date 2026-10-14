@@ -37,6 +37,7 @@
 
 import 'package:apache_connect/presentation/bloc/documents/documents_bloc.dart';
 import 'package:apache_connect/presentation/bloc/messages/messages_bloc.dart';
+import 'package:apache_connect/presentation/bloc/notifications/notifications_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/constants/app_strings.dart';
@@ -74,6 +75,9 @@ class ApacheConnectApp extends StatelessWidget {
         ),
         BlocProvider<DocumentsBloc>(
           create: (_) => di.sl<DocumentsBloc>(),
+        ),
+           BlocProvider<NotificationsBloc>(
+          create: (context) => di.sl<NotificationsBloc>(),
         ),
       ],
       child: MaterialApp(
