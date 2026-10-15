@@ -35,17 +35,21 @@
 // }
 
 
+import 'package:apache_connect/data/datasources/admin_remote_data_source.dart';
 import 'package:apache_connect/data/datasources/documents_remote_data_source.dart';
 import 'package:apache_connect/data/datasources/messages_remote_data_source.dart';
 import 'package:apache_connect/data/datasources/notifications_remote_data_source.dart';
+import 'package:apache_connect/data/repositories/admin_repository_impl.dart';
 import 'package:apache_connect/data/repositories/documents_repository_impl.dart';
 import 'package:apache_connect/data/repositories/messages_repository_impl.dart';
 import 'package:apache_connect/data/repositories/notifications_repository_impl.dart';
+import 'package:apache_connect/domain/repositories/admin_repository.dart';
 import 'package:apache_connect/domain/repositories/documents_repository.dart';
 import 'package:apache_connect/domain/repositories/messages_repository.dart';
 import 'package:apache_connect/domain/repositories/notifications_repository.dart';
 import 'package:apache_connect/domain/usecases/create_group_usecase.dart';
 import 'package:apache_connect/domain/usecases/delete_notification_usecase.dart';
+import 'package:apache_connect/domain/usecases/get_admin_stats_usecase.dart';
 import 'package:apache_connect/domain/usecases/get_conversations_usecase.dart';
 import 'package:apache_connect/domain/usecases/get_documents_usecase.dart';
 import 'package:apache_connect/domain/usecases/get_notifications_usecase.dart';
@@ -53,6 +57,7 @@ import 'package:apache_connect/domain/usecases/mark_all_notifications_read_useca
 import 'package:apache_connect/domain/usecases/mark_notification_read_usecase.dart';
 import 'package:apache_connect/domain/usecases/send_message_usecase.dart';
 import 'package:apache_connect/domain/usecases/upload_document_usecase.dart';
+import 'package:apache_connect/presentation/bloc/admin/admin_dashboard_bloc.dart';
 import 'package:apache_connect/presentation/bloc/documents/documents_bloc.dart';
 import 'package:apache_connect/presentation/bloc/messages/messages_bloc.dart';
 import 'package:apache_connect/presentation/bloc/notifications/notifications_bloc.dart';
@@ -91,6 +96,10 @@ Future<void> initDependencies() async {
     () => NotificationsRemoteDataSourceImpl(),
   );
 
+  sl.registerLazySingleton<AdminRemoteDataSource>(
+    () => AdminRemoteDataSourceImpl(),
+  );
+
 
   // 2. Repositories
   sl.registerLazySingleton<AuthRepository>(
@@ -107,6 +116,10 @@ Future<void> initDependencies() async {
   );
    sl.registerLazySingleton<NotificationsRepository>(
     () => NotificationsRepositoryImpl(remoteDataSource: sl()),
+  );
+
+    sl.registerLazySingleton<AdminRepository>(
+    () => AdminRepositoryImpl(remoteDataSource: sl()),
   );
   // 3. Use Cases
   sl.registerLazySingleton<LoginUseCase>(
@@ -146,6 +159,9 @@ Future<void> initDependencies() async {
     () => DeleteNotificationUseCase(sl()),
   );
 
+  sl.registerLazySingleton<GetAdminStatsUseCase>(
+    () => GetAdminStatsUseCase(sl()),
+  );
 
   // 4. BLoCs (Factory so fresh state is maintained per session)
   sl.registerFactory<LoginBloc>(
@@ -177,6 +193,12 @@ Future<void> initDependencies() async {
       markNotificationReadUseCase: sl(),
       markAllNotificationsReadUseCase: sl(),
       deleteNotificationUseCase: sl(),
+    ),
+  );
+
+    sl.registerFactory<AdminDashboardBloc>(
+    () => AdminDashboardBloc(
+      getAdminStatsUseCase: sl(),
     ),
   );
 }

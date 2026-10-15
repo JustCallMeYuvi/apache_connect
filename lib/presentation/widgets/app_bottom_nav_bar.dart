@@ -19,8 +19,10 @@ class AppBottomNav extends StatelessWidget {
     this.onIndexChanged,
     this.onMorePressed,
     this.isDarkMode = false,
-      this.alertsBadgeText = '2',
-    this.chatsBadgeText = '186',
+    //   this.alertsBadgeText = '2',
+    // this.chatsBadgeText = '186',
+     this.alertsBadgeText = '37',
+    this.chatsBadgeText = '27',
   });
 
   void _handleItemTap(BuildContext context, int index) {

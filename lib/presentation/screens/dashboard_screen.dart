@@ -151,11 +151,11 @@
 //                           break;
 
 //                         case 3:
-//                           // TODO: Notifications screen
+//                         
 //                           break;
 
 //                         case 4:
-//                           // TODO: More menu
+//                           
 //                           break;
 //                       }
 //                     },

@@ -59,42 +59,93 @@ class AppScaffold extends StatefulWidget {
 class _AppScaffoldState extends State<AppScaffold> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  void _handleNavigation(int index) {
-    if (widget.onNavItemSelected != null) {
-      widget.onNavItemSelected!(index);
-      return;
-    }
+  // void _handleNavigation(int index) {
+  //   if (widget.onNavItemSelected != null) {
+  //     widget.onNavItemSelected!(index);
+  //     return;
+  //   }
 
-    if (index == widget.activeNavIndex) return;
+  //   if (index == widget.activeNavIndex) return;
 
-    switch (index) {
-      case 0:
-        Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
-        break;
-      case 1:
-        Navigator.of(context).pushReplacementNamed(AppRoutes.messages);
-        break;
-      case 2:
-        Navigator.of(context).pushReplacementNamed(AppRoutes.documents);
-        break;
-      case 3:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Notifications (398 unread)'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        break;
-      default:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Module will be available in future update'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        break;
-    }
+  //   switch (index) {
+  //     case 0:
+  //       Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
+  //       break;
+  //     case 1:
+  //       Navigator.of(context).pushReplacementNamed(AppRoutes.messages);
+  //       break;
+  //     case 2:
+  //       Navigator.of(context).pushReplacementNamed(AppRoutes.documents);
+  //       break;
+  //     // case 3:
+  //     //   ScaffoldMessenger.of(context).showSnackBar(
+  //     //     const SnackBar(
+  //     //       content: Text('Notifications (398 unread)'),
+  //     //       behavior: SnackBarBehavior.floating,
+  //     //     ),
+  //     //   );
+  //     //   break;
+  //      case 3:
+  //       Navigator.of(context).pushReplacementNamed(AppRoutes.notifications);
+  //       break;
+  //     case 4:
+  //       Navigator.of(context).pushReplacementNamed(AppRoutes.adminDashboard);
+  //       break;
+  //     default:
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content: Text('Module will be available in future update'),
+  //           behavior: SnackBarBehavior.floating,
+  //         ),
+  //       );
+  //       break;
+  //   }
+  // }
+
+  
+void _handleNavigation(int index) {
+  // Keep the main application screens inside MainShellScreen.
+  // Admin Dashboard must navigate through its named route.
+  if (widget.onNavItemSelected != null && index >= 0 && index <= 3) {
+    widget.onNavItemSelected!(index);
+    return;
   }
+
+  if (index == widget.activeNavIndex) return;
+
+  switch (index) {
+    case 0:
+      Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
+      break;
+
+    case 1:
+      Navigator.of(context).pushReplacementNamed(AppRoutes.messages);
+      break;
+
+    case 2:
+      Navigator.of(context).pushReplacementNamed(AppRoutes.documents);
+      break;
+
+    case 3:
+      Navigator.of(context).pushReplacementNamed(AppRoutes.notifications);
+      break;
+
+    case 4:
+      Navigator.of(context)
+          .pushReplacementNamed(AppRoutes.adminDashboard);
+      break;
+
+    default:
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Module will be available in future update'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      break;
+  }
+}
+
 
   void _handleSignOut() {
     if (widget.onSignOut != null) {

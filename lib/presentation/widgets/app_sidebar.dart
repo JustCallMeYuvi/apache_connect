@@ -50,6 +50,9 @@ class AppSidebar extends StatelessWidget {
             case 3:
         Navigator.of(context).pushReplacementNamed(AppRoutes.notifications);
         break;
+         case 4:
+        Navigator.of(context).pushReplacementNamed(AppRoutes.adminDashboard);
+        break;
       
       default:
         ScaffoldMessenger.of(context).showSnackBar(

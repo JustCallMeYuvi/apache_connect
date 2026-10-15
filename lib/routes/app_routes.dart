@@ -1,3 +1,4 @@
+import 'package:apache_connect/presentation/screens/admin_dashboard_screen.dart';
 import 'package:apache_connect/presentation/screens/dashboard_screen.dart';
 import 'package:apache_connect/presentation/screens/documents_screen.dart';
 import 'package:apache_connect/presentation/screens/main_shell_screen.dart';
@@ -11,17 +12,22 @@ class AppRoutes {
 
   static const String login = '/login';
   static const String dashboard = '/dash';
-  static const String messages = '/messages';
+  static const String messages = '/chat';
+  static const String messagesAlias = '/messages';
   static const String documents = '/documents';
   static const String main = '/main';
   static const String notifications = '/notifications';
+   static const String adminDashboard = '/admin';
 
   static Map<String, WidgetBuilder> get routes => {
         login: (context) => const LoginScreen(),
         dashboard: (context) => const DashboardScreen(),
         messages: (context) => const MessagesScreen(),
+                messagesAlias: (context) => const MessagesScreen(),
+
         documents: (context) => const DocumentsScreen(),
         main: (context) => const MainShellScreen(),
         notifications: (context) => const NotificationsScreen(),
+         adminDashboard: (context) => const AdminDashboardScreen(),
       };
 }

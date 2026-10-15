@@ -243,7 +243,7 @@ class _DocumentPreviewPanelState extends State<DocumentPreviewPanel> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: badgeColor.withOpacity(0.2),
+                                color: badgeColor.withAlpha(51), // 0.2 * 255
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),

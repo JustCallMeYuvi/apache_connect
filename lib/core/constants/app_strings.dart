@@ -112,4 +112,18 @@
   static const String selectNotificationSubtitle = 'Choose an alert from the list to view its complete details';
   static const String allNotificationsReadSuccess = 'All notifications marked as read';
   static const String notificationDeletedSuccess = 'Notification deleted successfully';
+
+  
+  // Administration / Admin Dashboard Strings
+  static const String administrationTitle = 'Administration';
+  static const String adminDashboardHeading = 'Admin dashboard';
+  static const String manageSubtitle = 'Manage';
+  static const String adminUsersTitle = 'Users';
+  static const String adminRolesTitle = 'Roles';
+  static const String adminFactoriesTitle = 'Factories';
+  static const String adminLocationsTitle = 'Locations';
+  static const String adminCategoriesTitle = 'Categories';
+  static const String adminSettingsTitle = 'Settings';
+  static const String adminAuditLogTitle = 'Audit log';
+  static const String moduleComingSoon = 'will be available in an upcoming update.';
   }

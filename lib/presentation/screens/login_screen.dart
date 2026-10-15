@@ -143,30 +143,42 @@ class _LoginScreenState extends State<LoginScreen> {
           //     AppRoutes.main,
           //   );
           // }
+          // else if (state.isSuccess) {
+          //   final employeeId = state.authenticatedUser?.id;
+
+          //   // Remove any existing SnackBar before navigating.
+          //   ScaffoldMessenger.of(context).clearSnackBars();
+
+          //   Navigator.of(context).pushReplacementNamed(
+          //     AppRoutes.main,
+          //   );
+
+          //   // Show the success message after navigation.
+          //   WidgetsBinding.instance.addPostFrameCallback((_) {
+          //     final messenger = ScaffoldMessenger.maybeOf(context);
+
+          //     messenger?.showSnackBar(
+          //       SnackBar(
+          //         content: Text(
+          //           '${AppStrings.loginSuccess} (ID: $employeeId)',
+          //         ),
+          //         backgroundColor: AppColors.success,
+          //         behavior: SnackBarBehavior.floating,
+          //       ),
+          //     );
+          //   });
+          // }
+
           else if (state.isSuccess) {
-            final employeeId = state.authenticatedUser?.id;
+            // Clear any existing SnackBars before navigation.
+            final messenger = ScaffoldMessenger.of(context);
+            messenger.clearSnackBars();
 
-            // Remove any existing SnackBar before navigating.
-            ScaffoldMessenger.of(context).clearSnackBars();
+            // Navigate to the main screen.
+            Navigator.of(context).pushReplacementNamed(AppRoutes.main);
 
-            Navigator.of(context).pushReplacementNamed(
-              AppRoutes.main,
-            );
-
-            // Show the success message after navigation.
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              final messenger = ScaffoldMessenger.maybeOf(context);
-
-              messenger?.showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '${AppStrings.loginSuccess} (ID: $employeeId)',
-                  ),
-                  backgroundColor: AppColors.success,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            });
+            // Do not show a SnackBar using the old login screen context
+            // after the route has been replaced.
           }
         },
 

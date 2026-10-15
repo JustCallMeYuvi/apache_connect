@@ -13,9 +13,12 @@ import '../widgets/notification_list_item.dart';
 
 /// Notifications Screen in ApacheConnect following Clean Architecture & BLoC pattern
 class NotificationsScreen extends StatefulWidget {
-     final ValueChanged<int>? onNavItemSelected;
+  final ValueChanged<int>? onNavItemSelected;
 
-  const NotificationsScreen({super.key, this.onNavItemSelected,});
+  const NotificationsScreen({
+    super.key,
+    this.onNavItemSelected,
+  });
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
@@ -48,7 +51,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   void _handleMarkAllRead(BuildContext context) {
-    context.read<NotificationsBloc>().add(const MarkAllNotificationsReadEvent());
+    context
+        .read<NotificationsBloc>()
+        .add(const MarkAllNotificationsReadEvent());
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(AppStrings.allNotificationsReadSuccess),
@@ -70,7 +75,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   void _handleToggleRead(BuildContext context, String id) {
-    context.read<NotificationsBloc>().add(ToggleNotificationReadStatusEvent(id));
+    context
+        .read<NotificationsBloc>()
+        .add(ToggleNotificationReadStatusEvent(id));
   }
 
   @override
@@ -100,7 +107,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           title: AppStrings.notificationsTitle,
           activeNavIndex: 3, // 3 = Notifications/Alerts
           isDarkMode: _isDarkMode,
-            onNavItemSelected: widget.onNavItemSelected,
+          onNavItemSelected: widget.onNavItemSelected,
 
           notificationCount: unreadCount,
           onThemeToggle: () {
@@ -124,7 +131,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           },
           body: isMobile
               ? _buildMobileContent(context, state, notifications)
-              : _buildDesktopContent(context, state, notifications, selectedNotif),
+              : _buildDesktopContent(
+                  context, state, notifications, selectedNotif),
         );
       },
     );
@@ -157,7 +165,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             children: [
               // Header: "Notifications" Title + "Mark all read" Button
               Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, top: 22, bottom: 14),
+                padding: const EdgeInsets.only(
+                    left: 20, right: 20, top: 22, bottom: 14),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -174,7 +183,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       onTap: () => _handleMarkAllRead(context),
                       borderRadius: BorderRadius.circular(10),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
                           color: _isDarkMode
                               ? const Color(0xFF334155)
@@ -184,7 +194,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         child: Text(
                           AppStrings.markAllRead,
                           style: TextStyle(
-                            color: _isDarkMode ? Colors.white : const Color(0xFF1E293B),
+                            color: _isDarkMode
+                                ? Colors.white
+                                : const Color(0xFF1E293B),
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
                           ),
@@ -201,7 +213,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               Expanded(
                 child: state.isLoading
                     ? const Center(
-                        child: CircularProgressIndicator(color: AppColors.primaryOrange),
+                        child: CircularProgressIndicator(
+                            color: AppColors.primaryOrange),
                       )
                     : notifications.isEmpty
                         ? Center(
@@ -231,10 +244,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         : ListView.separated(
                             padding: const EdgeInsets.symmetric(vertical: 8),
                             itemCount: notifications.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 2),
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: 2),
                             itemBuilder: (context, index) {
                               final notif = notifications[index];
-                              final isSelected = notif.id == state.selectedNotificationId;
+                              final isSelected =
+                                  notif.id == state.selectedNotificationId;
 
                               return NotificationListItem(
                                 notification: notif,
@@ -256,9 +271,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         // Right Panel: Selected Notification Details
         Expanded(
           child: Container(
-            color: _isDarkMode
-                ? const Color(0xFF0F172A)
-                : const Color(0xFFFAFAFA),
+            color:
+                _isDarkMode ? const Color(0xFF0F172A) : const Color(0xFFFAFAFA),
             child: NotificationDetailsPanel(
               notification: selectedNotif,
               isDarkMode: _isDarkMode,
@@ -313,7 +327,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   onTap: () => _handleMarkAllRead(context),
                   borderRadius: BorderRadius.circular(10),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       color: _isDarkMode
                           ? const Color(0xFF334155)
@@ -323,7 +338,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     child: Text(
                       AppStrings.markAllRead,
                       style: TextStyle(
-                        color: _isDarkMode ? Colors.white : const Color(0xFF1E293B),
+                        color: _isDarkMode
+                            ? Colors.white
+                            : const Color(0xFF1E293B),
                         fontSize: 12.5,
                         fontWeight: FontWeight.w600,
                       ),
@@ -340,7 +357,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           Expanded(
             child: state.isLoading
                 ? const Center(
-                    child: CircularProgressIndicator(color: AppColors.primaryOrange),
+                    child: CircularProgressIndicator(
+                        color: AppColors.primaryOrange),
                   )
                 : notifications.isEmpty
                     ? Center(
@@ -384,9 +402,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                 context: context,
                                 notification: notif,
                                 isDarkMode: _isDarkMode,
-                                onOpen: () => _handleOpenNotification(context, notif),
-                                onToggleRead: () => _handleToggleRead(context, notif.id),
-                                onDelete: () => _handleDeleteNotification(context, notif.id),
+                                onOpen: () =>
+                                    _handleOpenNotification(context, notif),
+                                onToggleRead: () =>
+                                    _handleToggleRead(context, notif.id),
+                                onDelete: () => _handleDeleteNotification(
+                                    context, notif.id),
                               );
                             },
                           );
