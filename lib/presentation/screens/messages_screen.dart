@@ -507,7 +507,7 @@
 //   }
 // }
 
-
+import 'package:apache_connect/presentation/bloc/login/login_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/app_colors.dart';
@@ -525,7 +525,7 @@ import '../widgets/chat_search_bar.dart';
 import '../widgets/new_group_dialog.dart';
 
 class MessagesScreen extends StatefulWidget {
-    final ValueChanged<int>? onNavItemSelected;
+  final ValueChanged<int>? onNavItemSelected;
 
   const MessagesScreen({super.key, this.onNavItemSelected});
 
@@ -578,10 +578,17 @@ class _MessagesScreenState extends State<MessagesScreen> {
       builder: (context, state) {
         // final conversations = state.filteredConversations;
         final selectedConv = state.selectedConversation;
-
+        final loginState = context.read<LoginBloc>().state;
+        final user = loginState.authenticatedUser;
         return AppScaffold(
           title: AppStrings.messagesTitle,
           activeNavIndex: 1,
+          //           employeeName: authenticatedUser.name,
+          // employeeNo: authenticatedUser.id,
+          employeeName:
+              user?.displayName ?? user?.username ?? 'Unknown Employee',
+          employeeNo: user?.id ?? 'Unknown ID',
+
           onNavItemSelected: widget.onNavItemSelected,
           isDarkMode: _isDarkMode,
           onThemeToggle: () {
@@ -605,8 +612,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
           },
           floatingActionButton: isMobile && selectedConv == null
               ? FloatingActionButton(
-                //  heroTag: 'messagesFab',
-                heroTag: null,
+                  //  heroTag: 'messagesFab',
+                  heroTag: null,
                   onPressed: () => _showNewGroupDialog(context),
                   backgroundColor: AppColors.primaryOrange,
                   foregroundColor: Colors.white,
@@ -624,7 +631,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   // Desktop Master-Detail Layout (matches Desktop Screenshot)
-  Widget _buildDesktopContent(MessagesState state, ChatConversation? selectedConv) {
+  Widget _buildDesktopContent(
+      MessagesState state, ChatConversation? selectedConv) {
     return Row(
       children: [
         // Left Column: Chat List Panel
@@ -634,7 +642,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
             color: _isDarkMode ? const Color(0xFF1E293B) : Colors.white,
             border: Border(
               right: BorderSide(
-                color: _isDarkMode ? const Color(0x1AFFFFFF) : const Color(0xFFE2E8F0),
+                color: _isDarkMode
+                    ? const Color(0x1AFFFFFF)
+                    : const Color(0xFFE2E8F0),
                 width: 1,
               ),
             ),
@@ -643,7 +653,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
             children: [
               // Chat Header & Search Area
               Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 12),
+                padding: const EdgeInsets.only(
+                    left: 20, right: 20, top: 20, bottom: 12),
                 child: Column(
                   children: [
                     // Title and "New group" Button
@@ -653,7 +664,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                         Text(
                           AppStrings.messagesTitle,
                           style: TextStyle(
-                            color: _isDarkMode ? Colors.white : AppColors.textDark,
+                            color:
+                                _isDarkMode ? Colors.white : AppColors.textDark,
                             fontSize: 22,
                             fontWeight: FontWeight.w800,
                             letterSpacing: -0.4,
@@ -664,7 +676,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                           icon: const Icon(Icons.group_add_outlined, size: 16),
                           label: const Text(
                             AppStrings.newGroup,
-                            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+                            style: TextStyle(
+                                fontSize: 12.5, fontWeight: FontWeight.w700),
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryOrange,
@@ -673,7 +686,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 8),
                             minimumSize: const Size(0, 36),
                           ),
                         ),
@@ -687,10 +701,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       controller: _searchController,
                       isDarkMode: _isDarkMode,
                       onChanged: (val) {
-                        context.read<MessagesBloc>().add(SearchQueryChangedEvent(val));
+                        context
+                            .read<MessagesBloc>()
+                            .add(SearchQueryChangedEvent(val));
                       },
                       onClear: () {
-                        context.read<MessagesBloc>().add(const SearchQueryChangedEvent(''));
+                        context
+                            .read<MessagesBloc>()
+                            .add(const SearchQueryChangedEvent(''));
                       },
                     ),
 
@@ -701,7 +719,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       selectedFilter: state.selectedFilter,
                       isDarkMode: _isDarkMode,
                       onFilterChanged: (filter) {
-                        context.read<MessagesBloc>().add(FilterTabChangedEvent(filter));
+                        context
+                            .read<MessagesBloc>()
+                            .add(FilterTabChangedEvent(filter));
                       },
                     ),
                   ],
@@ -714,7 +734,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
               Expanded(
                 child: state.isLoading
                     ? const Center(
-                        child: CircularProgressIndicator(color: AppColors.primaryOrange),
+                        child: CircularProgressIndicator(
+                            color: AppColors.primaryOrange),
                       )
                     : state.filteredConversations.isEmpty
                         ? Center(
@@ -729,12 +750,15 @@ class _MessagesScreenState extends State<MessagesScreen> {
                             ),
                           )
                         : ListView.separated(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 10),
                             itemCount: state.filteredConversations.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 2),
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: 2),
                             itemBuilder: (context, index) {
                               final conv = state.filteredConversations[index];
-                              final isSelected = conv.id == state.selectedConversationId;
+                              final isSelected =
+                                  conv.id == state.selectedConversationId;
 
                               return ChatListItem(
                                 conversation: conv,
@@ -776,7 +800,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   // Mobile Single-Pane Layout (matches Mobile Screenshot)
-  Widget _buildMobileContent(MessagesState state, ChatConversation? selectedConv) {
+  Widget _buildMobileContent(
+      MessagesState state, ChatConversation? selectedConv) {
     if (selectedConv != null) {
       // In active chat on mobile
       return ChatConversationView(
@@ -821,7 +846,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       icon: const Icon(Icons.group_add_outlined, size: 16),
                       label: const Text(
                         AppStrings.newGroup,
-                        style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                            fontSize: 12.5, fontWeight: FontWeight.w700),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryOrange,
@@ -830,7 +856,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 8),
                         minimumSize: const Size(0, 36),
                       ),
                     ),
@@ -844,10 +871,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   controller: _searchController,
                   isDarkMode: _isDarkMode,
                   onChanged: (val) {
-                    context.read<MessagesBloc>().add(SearchQueryChangedEvent(val));
+                    context
+                        .read<MessagesBloc>()
+                        .add(SearchQueryChangedEvent(val));
                   },
                   onClear: () {
-                    context.read<MessagesBloc>().add(const SearchQueryChangedEvent(''));
+                    context
+                        .read<MessagesBloc>()
+                        .add(const SearchQueryChangedEvent(''));
                   },
                 ),
 
@@ -858,7 +889,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   selectedFilter: state.selectedFilter,
                   isDarkMode: _isDarkMode,
                   onFilterChanged: (filter) {
-                    context.read<MessagesBloc>().add(FilterTabChangedEvent(filter));
+                    context
+                        .read<MessagesBloc>()
+                        .add(FilterTabChangedEvent(filter));
                   },
                 ),
               ],
@@ -881,7 +914,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   isSelected: false,
                   isDarkMode: _isDarkMode,
                   onTap: () {
-                    context.read<MessagesBloc>().add(SelectConversationEvent(conv.id));
+                    context
+                        .read<MessagesBloc>()
+                        .add(SelectConversationEvent(conv.id));
                   },
                 );
               },

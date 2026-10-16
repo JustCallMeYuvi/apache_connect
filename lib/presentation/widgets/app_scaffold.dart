@@ -1,5 +1,6 @@
 import 'package:apache_connect/presentation/widgets/app_bottom_nav_bar.dart';
 import 'package:apache_connect/presentation/widgets/app_sidebar.dart';
+import 'package:apache_connect/presentation/widgets/employee_watermark.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../routes/app_routes.dart';
@@ -22,7 +23,8 @@ class AppScaffold extends StatefulWidget {
   final String title;
   final Widget? titleWidget;
   final Widget body;
-  final int activeNavIndex; // 0 = Dashboard/Home, 1 = Messages/Chats, 2 = Documents/Docs
+  final int
+      activeNavIndex; // 0 = Dashboard/Home, 1 = Messages/Chats, 2 = Documents/Docs
   final Widget? floatingActionButton;
   final bool isDarkMode;
   final VoidCallback? onThemeToggle;
@@ -32,7 +34,9 @@ class AppScaffold extends StatefulWidget {
   final ValueChanged<int>? onNavItemSelected;
   final List<Widget>? actions;
   final Color? backgroundColor;
-   final int notificationCount;
+  final int notificationCount;
+  final String employeeName;
+  final String employeeNo;
 
   const AppScaffold({
     super.key,
@@ -50,6 +54,8 @@ class AppScaffold extends StatefulWidget {
     this.actions,
     this.backgroundColor,
     this.notificationCount = 2,
+    this.employeeName = '',
+    this.employeeNo = '',
   });
 
   @override
@@ -58,6 +64,26 @@ class AppScaffold extends StatefulWidget {
 
 class _AppScaffoldState extends State<AppScaffold> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  Widget _buildWatermarkedBody() {
+    final shouldShowWatermark =
+        widget.activeNavIndex == 1 || widget.activeNavIndex == 2;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        widget.body,
+        if (shouldShowWatermark)
+          Positioned.fill(
+            child: EmployeeWatermark(
+              employeeName: widget.employeeName,
+              employeeNo: widget.employeeNo,
+              isDarkMode: widget.isDarkMode,
+            ),
+          ),
+      ],
+    );
+  }
 
   // void _handleNavigation(int index) {
   //   if (widget.onNavItemSelected != null) {
@@ -102,50 +128,47 @@ class _AppScaffoldState extends State<AppScaffold> {
   //   }
   // }
 
-  
-void _handleNavigation(int index) {
-  // Keep the main application screens inside MainShellScreen.
-  // Admin Dashboard must navigate through its named route.
-  if (widget.onNavItemSelected != null && index >= 0 && index <= 3) {
-    widget.onNavItemSelected!(index);
-    return;
+  void _handleNavigation(int index) {
+    // Keep the main application screens inside MainShellScreen.
+    // Admin Dashboard must navigate through its named route.
+    if (widget.onNavItemSelected != null && index >= 0 && index <= 4) {
+      widget.onNavItemSelected!(index);
+      return;
+    }
+
+    if (index == widget.activeNavIndex) return;
+
+    switch (index) {
+      case 0:
+        Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
+        break;
+
+      case 1:
+        Navigator.of(context).pushReplacementNamed(AppRoutes.messages);
+        break;
+
+      case 2:
+        Navigator.of(context).pushReplacementNamed(AppRoutes.documents);
+        break;
+
+      case 3:
+        Navigator.of(context).pushReplacementNamed(AppRoutes.notifications);
+        break;
+
+      case 4:
+        Navigator.of(context).pushReplacementNamed(AppRoutes.adminDashboard);
+        break;
+
+      default:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Module will be available in future update'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        break;
+    }
   }
-
-  if (index == widget.activeNavIndex) return;
-
-  switch (index) {
-    case 0:
-      Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
-      break;
-
-    case 1:
-      Navigator.of(context).pushReplacementNamed(AppRoutes.messages);
-      break;
-
-    case 2:
-      Navigator.of(context).pushReplacementNamed(AppRoutes.documents);
-      break;
-
-    case 3:
-      Navigator.of(context).pushReplacementNamed(AppRoutes.notifications);
-      break;
-
-    case 4:
-      Navigator.of(context)
-          .pushReplacementNamed(AppRoutes.adminDashboard);
-      break;
-
-    default:
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Module will be available in future update'),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      break;
-  }
-}
-
 
   void _handleSignOut() {
     if (widget.onSignOut != null) {
@@ -188,7 +211,8 @@ void _handleNavigation(int index) {
             onProfilePressed: widget.onProfilePressed,
             actions: widget.actions,
           ),
-          body: widget.body,
+          // body: widget.body,
+          body: _buildWatermarkedBody(),
           bottomNavigationBar: AppBottomNav(
             selectedIndex: widget.activeNavIndex,
             onIndexChanged: (idx) {
@@ -240,7 +264,8 @@ void _handleNavigation(int index) {
 
                 // Screen-specific Content Area
                 Expanded(
-                  child: widget.body,
+                  // child: widget.body,
+                  child: _buildWatermarkedBody(),
                 ),
               ],
             ),

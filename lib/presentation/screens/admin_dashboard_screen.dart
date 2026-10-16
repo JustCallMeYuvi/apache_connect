@@ -12,7 +12,8 @@ import '../widgets/app_scaffold.dart';
 /// Complete Admin Dashboard Screen in ApacheConnect following Clean Architecture & BLoC pattern
 /// Recreates the Desktop/Web and Mobile layouts from reference screenshots.
 class AdminDashboardScreen extends StatefulWidget {
-  const AdminDashboardScreen({super.key});
+    final ValueChanged<int>? onNavItemSelected;
+  const AdminDashboardScreen({super.key, this.onNavItemSelected});
 
   @override
   State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
@@ -144,6 +145,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         return AppScaffold(
           title: AppStrings.administrationTitle,
           activeNavIndex: 4, // 4 = Admin dashboard in sidebar
+           onNavItemSelected: widget.onNavItemSelected, // ADD THIS LINE
           isDarkMode: _isDarkMode,
           notificationCount: isMobile ? 37 : 36,
           backgroundColor:

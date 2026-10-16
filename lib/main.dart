@@ -48,7 +48,7 @@ import 'core/di/injection_container.dart' as di;
 import 'core/theme/app_theme.dart';
 import 'presentation/bloc/dashboard/dashboard_bloc.dart';
 import 'presentation/bloc/login/login_bloc.dart';
-import 'presentation/screens/login_screen.dart';
+// import 'presentation/screens/login_screen.dart';
 import 'routes/app_routes.dart';
 
 Future<void> enableScreenProtection() async {
@@ -108,7 +108,7 @@ class ApacheConnectApp extends StatelessWidget {
         theme: AppTheme.darkTheme,
         initialRoute: AppRoutes.login,
         routes: AppRoutes.routes,
-        home: const LoginScreen(),
+        // home: const LoginScreen(),
       ),
     );
   }

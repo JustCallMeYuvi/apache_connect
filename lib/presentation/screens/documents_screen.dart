@@ -805,7 +805,7 @@
 //   }
 // }
 
-
+import 'package:apache_connect/presentation/bloc/login/login_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/app_strings.dart';
@@ -822,7 +822,7 @@ import '../widgets/document_preview_panel.dart';
 import '../widgets/document_search_field.dart';
 
 class DocumentsScreen extends StatefulWidget {
-    final ValueChanged<int>? onNavItemSelected;
+  final ValueChanged<int>? onNavItemSelected;
   const DocumentsScreen({super.key, this.onNavItemSelected});
 
   @override
@@ -863,7 +863,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           final isDark = _isDarkMode;
           return AlertDialog(
             backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             title: Text(
               AppStrings.uploadDocumentDialogTitle,
               style: TextStyle(
@@ -880,7 +881,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   Text(
                     AppStrings.documentNameLabel,
                     style: TextStyle(
-                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF6B7280),
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF6B7280),
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
                     ),
@@ -889,26 +892,36 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   TextField(
                     controller: nameController,
                     autofocus: true,
-                    style: TextStyle(color: isDark ? Colors.white : const Color(0xFF1F2937)),
+                    style: TextStyle(
+                        color: isDark ? Colors.white : const Color(0xFF1F2937)),
                     decoration: InputDecoration(
                       hintText: 'e.g. Budget-Q4',
                       hintStyle: TextStyle(
-                        color: isDark ? const Color(0xFF64748B) : const Color(0xFF9CA3AF),
+                        color: isDark
+                            ? const Color(0xFF64748B)
+                            : const Color(0xFF9CA3AF),
                         fontSize: 14,
                       ),
                       filled: true,
-                      fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF9FAFB),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      fillColor: isDark
+                          ? const Color(0xFF0F172A)
+                          : const Color(0xFFF9FAFB),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 12),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
-                          color: isDark ? const Color(0x22FFFFFF) : const Color(0xFFE5E7EB),
+                          color: isDark
+                              ? const Color(0x22FFFFFF)
+                              : const Color(0xFFE5E7EB),
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
-                          color: isDark ? const Color(0x22FFFFFF) : const Color(0xFFE5E7EB),
+                          color: isDark
+                              ? const Color(0x22FFFFFF)
+                              : const Color(0xFFE5E7EB),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
@@ -921,7 +934,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   Text(
                     AppStrings.categoryDropdownLabel,
                     style: TextStyle(
-                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF6B7280),
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF6B7280),
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
                     ),
@@ -930,23 +945,30 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF9FAFB),
+                      color: isDark
+                          ? const Color(0xFF0F172A)
+                          : const Color(0xFFF9FAFB),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: isDark ? const Color(0x22FFFFFF) : const Color(0xFFE5E7EB),
+                        color: isDark
+                            ? const Color(0x22FFFFFF)
+                            : const Color(0xFFE5E7EB),
                       ),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: selectedCategory,
                         isExpanded: true,
-                        dropdownColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+                        dropdownColor:
+                            isDark ? const Color(0xFF1E293B) : Colors.white,
                         style: TextStyle(
-                          color: isDark ? Colors.white : const Color(0xFF1F2937),
+                          color:
+                              isDark ? Colors.white : const Color(0xFF1F2937),
                           fontSize: 14,
                         ),
                         items: categories.map((c) {
-                          return DropdownMenuItem<String>(value: c, child: Text(c));
+                          return DropdownMenuItem<String>(
+                              value: c, child: Text(c));
                         }).toList(),
                         onChanged: (val) {
                           if (val != null) {
@@ -960,7 +982,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   Text(
                     AppStrings.fileTypeLabel,
                     style: TextStyle(
-                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF6B7280),
+                      color: isDark
+                          ? const Color(0xFF94A3B8)
+                          : const Color(0xFF6B7280),
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
                     ),
@@ -975,11 +999,17 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                         selected: isSelected,
                         selectedColor: const Color(0xFFDE5227),
                         labelStyle: TextStyle(
-                          color: isSelected ? Colors.white : (isDark ? Colors.white70 : const Color(0xFF374151)),
+                          color: isSelected
+                              ? Colors.white
+                              : (isDark
+                                  ? Colors.white70
+                                  : const Color(0xFF374151)),
                           fontWeight: FontWeight.w700,
                           fontSize: 12,
                         ),
-                        backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF3F4F6),
+                        backgroundColor: isDark
+                            ? const Color(0xFF0F172A)
+                            : const Color(0xFFF3F4F6),
                         onSelected: (sel) {
                           if (sel) {
                             setDialogState(() => selectedFormat = fmt);
@@ -997,7 +1027,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 child: Text(
                   AppStrings.cancel,
                   style: TextStyle(
-                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF6B7280),
+                    color: isDark
+                        ? const Color(0xFF94A3B8)
+                        : const Color(0xFF6B7280),
                   ),
                 ),
               ),
@@ -1005,20 +1037,24 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 onPressed: () {
                   final text = nameController.text.trim();
                   if (text.isNotEmpty) {
-                    final filename = text.endsWith('.$selectedFormat') ? text : '$text.$selectedFormat';
+                    final filename = text.endsWith('.$selectedFormat')
+                        ? text
+                        : '$text.$selectedFormat';
                     context.read<DocumentsBloc>().add(
                           UploadDocumentEvent(
                             name: filename,
                             category: selectedCategory,
                             extension: selectedFormat,
                             fileSize: '50 KB',
-                            description: 'Corporate $selectedCategory workspace document.',
+                            description:
+                                'Corporate $selectedCategory workspace document.',
                           ),
                         );
                     Navigator.of(ctx).pop();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Document "$filename" uploaded successfully'),
+                        content:
+                            Text('Document "$filename" uploaded successfully'),
                         backgroundColor: const Color(0xFFDE5227),
                         behavior: SnackBarBehavior.floating,
                       ),
@@ -1028,7 +1064,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFDE5227),
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
                 child: const Text(AppStrings.upload),
               ),
@@ -1056,11 +1093,18 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       builder: (context, state) {
         final documents = state.filteredDocuments;
         final selectedDoc = state.selectedDocument;
+        final loginState = context.read<LoginBloc>().state;
+        final user = loginState.authenticatedUser;
 
         // Auto-select first document on desktop if none selected to match Screenshot 1
-        if (!isMobile && selectedDoc == null && documents.isNotEmpty && state.selectedDocumentId == null) {
+        if (!isMobile &&
+            selectedDoc == null &&
+            documents.isNotEmpty &&
+            state.selectedDocumentId == null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            context.read<DocumentsBloc>().add(SelectDocumentEvent(documents.first.id));
+            context
+                .read<DocumentsBloc>()
+                .add(SelectDocumentEvent(documents.first.id));
           });
         }
 
@@ -1068,6 +1112,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           title: AppStrings.documentsScreenTitle,
           activeNavIndex: 2,
           isDarkMode: _isDarkMode,
+          employeeName:
+              user?.displayName ?? user?.username ?? 'Unknown Employee',
+          employeeNo: user?.id ?? 'Unknown ID',
           onThemeToggle: () {
             setState(() => _isDarkMode = !_isDarkMode);
           },
@@ -1097,7 +1144,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   backgroundColor: const Color(0xFFDE5227),
                   foregroundColor: Colors.white,
                   elevation: 6,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                   child: const Icon(Icons.file_upload_outlined, size: 24),
                 )
               : null,
@@ -1126,7 +1174,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             color: _isDarkMode ? const Color(0xFF131D2E) : Colors.white,
             border: Border(
               right: BorderSide(
-                color: _isDarkMode ? const Color(0x1AFFFFFF) : const Color(0xFFE5E7EB),
+                color: _isDarkMode
+                    ? const Color(0x1AFFFFFF)
+                    : const Color(0xFFE5E7EB),
                 width: 1,
               ),
             ),
@@ -1143,7 +1193,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                     Text(
                       AppStrings.documentsScreenTitle,
                       style: TextStyle(
-                        color: _isDarkMode ? Colors.white : const Color(0xFF111827),
+                        color: _isDarkMode
+                            ? Colors.white
+                            : const Color(0xFF111827),
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.3,
@@ -1154,12 +1206,14 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                       icon: const Icon(Icons.file_upload_outlined, size: 17),
                       label: const Text(
                         AppStrings.uploadButtonLabel,
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700, fontSize: 13.5),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFDE5227),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -1179,10 +1233,14 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                       controller: _searchController,
                       isDarkMode: _isDarkMode,
                       onChanged: (val) {
-                        context.read<DocumentsBloc>().add(SearchDocumentsEvent(val));
+                        context
+                            .read<DocumentsBloc>()
+                            .add(SearchDocumentsEvent(val));
                       },
                       onClear: () {
-                        context.read<DocumentsBloc>().add(const SearchDocumentsEvent(''));
+                        context
+                            .read<DocumentsBloc>()
+                            .add(const SearchDocumentsEvent(''));
                       },
                     ),
                     const SizedBox(height: 12),
@@ -1191,7 +1249,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                       selectedCategory: state.selectedCategory,
                       isDarkMode: _isDarkMode,
                       onCategoryChanged: (cat) {
-                        context.read<DocumentsBloc>().add(CategoryFilterChangedEvent(cat));
+                        context
+                            .read<DocumentsBloc>()
+                            .add(CategoryFilterChangedEvent(cat));
                       },
                     ),
                   ],
@@ -1204,7 +1264,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
               Expanded(
                 child: state.isLoading
                     ? const Center(
-                        child: CircularProgressIndicator(color: Color(0xFFDE5227)),
+                        child:
+                            CircularProgressIndicator(color: Color(0xFFDE5227)),
                       )
                     : documents.isEmpty
                         ? Center(
@@ -1216,13 +1277,17 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                                   Icon(
                                     Icons.search_off_rounded,
                                     size: 44,
-                                    color: _isDarkMode ? Colors.white38 : Colors.black26,
+                                    color: _isDarkMode
+                                        ? Colors.white38
+                                        : Colors.black26,
                                   ),
                                   const SizedBox(height: 10),
                                   Text(
                                     'No documents found',
                                     style: TextStyle(
-                                      color: _isDarkMode ? Colors.white70 : const Color(0xFF374151),
+                                      color: _isDarkMode
+                                          ? Colors.white70
+                                          : const Color(0xFF374151),
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14.5,
                                     ),
@@ -1232,9 +1297,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                             ),
                           )
                         : ListView.separated(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 4),
                             itemCount: documents.length,
-                            separatorBuilder: (ctx, i) => const SizedBox(height: 4),
+                            separatorBuilder: (ctx, i) =>
+                                const SizedBox(height: 4),
                             itemBuilder: (ctx, i) {
                               final doc = documents[i];
                               final isSelected = selectedDoc?.id == doc.id;
@@ -1243,7 +1310,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                                 isSelected: isSelected,
                                 isDarkMode: _isDarkMode,
                                 onTap: () {
-                                  context.read<DocumentsBloc>().add(SelectDocumentEvent(doc.id));
+                                  context
+                                      .read<DocumentsBloc>()
+                                      .add(SelectDocumentEvent(doc.id));
                                 },
                               );
                             },
@@ -1262,7 +1331,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   isDarkMode: _isDarkMode,
                   isMobile: false,
                   onClose: () {
-                    context.read<DocumentsBloc>().add(const ClearSelectedDocumentEvent());
+                    context
+                        .read<DocumentsBloc>()
+                        .add(const ClearSelectedDocumentEvent());
                   },
                 ),
         ),
@@ -1316,7 +1387,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFDE5227),
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -1339,7 +1411,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   context.read<DocumentsBloc>().add(SearchDocumentsEvent(val));
                 },
                 onClear: () {
-                  context.read<DocumentsBloc>().add(const SearchDocumentsEvent(''));
+                  context
+                      .read<DocumentsBloc>()
+                      .add(const SearchDocumentsEvent(''));
                 },
               ),
               const SizedBox(height: 10),
@@ -1348,7 +1422,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 selectedCategory: state.selectedCategory,
                 isDarkMode: _isDarkMode,
                 onCategoryChanged: (cat) {
-                  context.read<DocumentsBloc>().add(CategoryFilterChangedEvent(cat));
+                  context
+                      .read<DocumentsBloc>()
+                      .add(CategoryFilterChangedEvent(cat));
                 },
               ),
             ],
@@ -1364,7 +1440,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   child: CircularProgressIndicator(color: Color(0xFFDE5227)),
                 )
               : ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                   itemCount: documents.length,
                   separatorBuilder: (ctx, i) => const SizedBox(height: 4),
                   itemBuilder: (ctx, i) {
@@ -1374,7 +1451,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                       isSelected: false,
                       isDarkMode: _isDarkMode,
                       onTap: () {
-                        context.read<DocumentsBloc>().add(SelectDocumentEvent(doc.id));
+                        context
+                            .read<DocumentsBloc>()
+                            .add(SelectDocumentEvent(doc.id));
                       },
                     );
                   },
