@@ -51,8 +51,10 @@ class AdminDashboardGrid extends StatelessWidget {
         } else {
           // Mobile: Single vertical column
           crossAxisCount = 1;
-          childAspectRatio = 2.6;
-          spacing = 14.0;
+          // childAspectRatio = 2.6;
+          // spacing = 14.0;
+          childAspectRatio = 2.2;
+          spacing = 12.0;
         }
 
         return GridView.builder(

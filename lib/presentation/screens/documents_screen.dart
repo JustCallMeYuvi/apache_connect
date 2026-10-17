@@ -806,6 +806,7 @@
 // }
 
 import 'package:apache_connect/presentation/bloc/login/login_bloc.dart';
+import 'package:apache_connect/presentation/widgets/excel_editor_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/app_strings.dart';
@@ -820,6 +821,7 @@ import '../widgets/document_empty_preview.dart';
 import '../widgets/document_list_item.dart';
 import '../widgets/document_preview_panel.dart';
 import '../widgets/document_search_field.dart';
+import '../widgets/upload_document_dialog.dart';
 
 class DocumentsScreen extends StatefulWidget {
   final ValueChanged<int>? onNavItemSelected;
@@ -833,6 +835,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
   bool _isDarkMode = false;
+
+  bool _isExcelEditing = false;
+  String? _editingDocumentId;
 
   @override
   void initState() {
@@ -850,231 +855,238 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
   void _showUploadDialog(BuildContext context) {
-    final nameController = TextEditingController();
-    String selectedCategory = 'Finance';
-    String selectedFormat = 'xlsx';
-    final categories = ['Finance', 'Safety', 'Operations', 'Compliance'];
-    final formats = ['xlsx', 'docx', 'pptx', 'pdf'];
-
-    showDialog(
+    UploadDocumentDialog.show(
       context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) {
-          final isDark = _isDarkMode;
-          return AlertDialog(
-            backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: Text(
-              AppStrings.uploadDocumentDialogTitle,
-              style: TextStyle(
-                color: isDark ? Colors.white : const Color(0xFF1F2937),
-                fontWeight: FontWeight.w700,
-                fontSize: 18,
-              ),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    AppStrings.documentNameLabel,
-                    style: TextStyle(
-                      color: isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF6B7280),
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: nameController,
-                    autofocus: true,
-                    style: TextStyle(
-                        color: isDark ? Colors.white : const Color(0xFF1F2937)),
-                    decoration: InputDecoration(
-                      hintText: 'e.g. Budget-Q4',
-                      hintStyle: TextStyle(
-                        color: isDark
-                            ? const Color(0xFF64748B)
-                            : const Color(0xFF9CA3AF),
-                        fontSize: 14,
-                      ),
-                      filled: true,
-                      fillColor: isDark
-                          ? const Color(0xFF0F172A)
-                          : const Color(0xFFF9FAFB),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 12),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: isDark
-                              ? const Color(0x22FFFFFF)
-                              : const Color(0xFFE5E7EB),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: isDark
-                              ? const Color(0x22FFFFFF)
-                              : const Color(0xFFE5E7EB),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Color(0xFFDE5227)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    AppStrings.categoryDropdownLabel,
-                    style: TextStyle(
-                      color: isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF6B7280),
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? const Color(0xFF0F172A)
-                          : const Color(0xFFF9FAFB),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: isDark
-                            ? const Color(0x22FFFFFF)
-                            : const Color(0xFFE5E7EB),
-                      ),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: selectedCategory,
-                        isExpanded: true,
-                        dropdownColor:
-                            isDark ? const Color(0xFF1E293B) : Colors.white,
-                        style: TextStyle(
-                          color:
-                              isDark ? Colors.white : const Color(0xFF1F2937),
-                          fontSize: 14,
-                        ),
-                        items: categories.map((c) {
-                          return DropdownMenuItem<String>(
-                              value: c, child: Text(c));
-                        }).toList(),
-                        onChanged: (val) {
-                          if (val != null) {
-                            setDialogState(() => selectedCategory = val);
-                          }
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    AppStrings.fileTypeLabel,
-                    style: TextStyle(
-                      color: isDark
-                          ? const Color(0xFF94A3B8)
-                          : const Color(0xFF6B7280),
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    children: formats.map((fmt) {
-                      final isSelected = selectedFormat == fmt;
-                      return ChoiceChip(
-                        label: Text(fmt.toUpperCase()),
-                        selected: isSelected,
-                        selectedColor: const Color(0xFFDE5227),
-                        labelStyle: TextStyle(
-                          color: isSelected
-                              ? Colors.white
-                              : (isDark
-                                  ? Colors.white70
-                                  : const Color(0xFF374151)),
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12,
-                        ),
-                        backgroundColor: isDark
-                            ? const Color(0xFF0F172A)
-                            : const Color(0xFFF3F4F6),
-                        onSelected: (sel) {
-                          if (sel) {
-                            setDialogState(() => selectedFormat = fmt);
-                          }
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: Text(
-                  AppStrings.cancel,
-                  style: TextStyle(
-                    color: isDark
-                        ? const Color(0xFF94A3B8)
-                        : const Color(0xFF6B7280),
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  final text = nameController.text.trim();
-                  if (text.isNotEmpty) {
-                    final filename = text.endsWith('.$selectedFormat')
-                        ? text
-                        : '$text.$selectedFormat';
-                    context.read<DocumentsBloc>().add(
-                          UploadDocumentEvent(
-                            name: filename,
-                            category: selectedCategory,
-                            extension: selectedFormat,
-                            fileSize: '50 KB',
-                            description:
-                                'Corporate $selectedCategory workspace document.',
-                          ),
-                        );
-                    Navigator.of(ctx).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content:
-                            Text('Document "$filename" uploaded successfully'),
-                        backgroundColor: const Color(0xFFDE5227),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFDE5227),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                ),
-                child: const Text(AppStrings.upload),
-              ),
-            ],
-          );
-        },
-      ),
+      isDarkMode: _isDarkMode,
     );
   }
+
+  // void _showUploadDialog(BuildContext context) {
+  //   final nameController = TextEditingController();
+  //   String selectedCategory = 'Finance';
+  //   String selectedFormat = 'xlsx';
+  //   final categories = ['Finance', 'Safety', 'Operations', 'Compliance'];
+  //   final formats = ['xlsx', 'docx', 'pptx', 'pdf'];
+
+  //   showDialog(
+  //     context: context,
+  //     builder: (ctx) => StatefulBuilder(
+  //       builder: (ctx, setDialogState) {
+  //         final isDark = _isDarkMode;
+  //         return AlertDialog(
+  //           backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+  //           shape:
+  //               RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+  //           title: Text(
+  //             AppStrings.uploadDocumentDialogTitle,
+  //             style: TextStyle(
+  //               color: isDark ? Colors.white : const Color(0xFF1F2937),
+  //               fontWeight: FontWeight.w700,
+  //               fontSize: 18,
+  //             ),
+  //           ),
+  //           content: SingleChildScrollView(
+  //             child: Column(
+  //               mainAxisSize: MainAxisSize.min,
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 Text(
+  //                   AppStrings.documentNameLabel,
+  //                   style: TextStyle(
+  //                     color: isDark
+  //                         ? const Color(0xFF94A3B8)
+  //                         : const Color(0xFF6B7280),
+  //                     fontSize: 12.5,
+  //                     fontWeight: FontWeight.w600,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 6),
+  //                 TextField(
+  //                   controller: nameController,
+  //                   autofocus: true,
+  //                   style: TextStyle(
+  //                       color: isDark ? Colors.white : const Color(0xFF1F2937)),
+  //                   decoration: InputDecoration(
+  //                     hintText: 'e.g. Budget-Q4',
+  //                     hintStyle: TextStyle(
+  //                       color: isDark
+  //                           ? const Color(0xFF64748B)
+  //                           : const Color(0xFF9CA3AF),
+  //                       fontSize: 14,
+  //                     ),
+  //                     filled: true,
+  //                     fillColor: isDark
+  //                         ? const Color(0xFF0F172A)
+  //                         : const Color(0xFFF9FAFB),
+  //                     contentPadding: const EdgeInsets.symmetric(
+  //                         horizontal: 14, vertical: 12),
+  //                     border: OutlineInputBorder(
+  //                       borderRadius: BorderRadius.circular(10),
+  //                       borderSide: BorderSide(
+  //                         color: isDark
+  //                             ? const Color(0x22FFFFFF)
+  //                             : const Color(0xFFE5E7EB),
+  //                       ),
+  //                     ),
+  //                     enabledBorder: OutlineInputBorder(
+  //                       borderRadius: BorderRadius.circular(10),
+  //                       borderSide: BorderSide(
+  //                         color: isDark
+  //                             ? const Color(0x22FFFFFF)
+  //                             : const Color(0xFFE5E7EB),
+  //                       ),
+  //                     ),
+  //                     focusedBorder: OutlineInputBorder(
+  //                       borderRadius: BorderRadius.circular(10),
+  //                       borderSide: const BorderSide(color: Color(0xFFDE5227)),
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 16),
+  //                 Text(
+  //                   AppStrings.categoryDropdownLabel,
+  //                   style: TextStyle(
+  //                     color: isDark
+  //                         ? const Color(0xFF94A3B8)
+  //                         : const Color(0xFF6B7280),
+  //                     fontSize: 12.5,
+  //                     fontWeight: FontWeight.w600,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 6),
+  //                 Container(
+  //                   padding: const EdgeInsets.symmetric(horizontal: 12),
+  //                   decoration: BoxDecoration(
+  //                     color: isDark
+  //                         ? const Color(0xFF0F172A)
+  //                         : const Color(0xFFF9FAFB),
+  //                     borderRadius: BorderRadius.circular(10),
+  //                     border: Border.all(
+  //                       color: isDark
+  //                           ? const Color(0x22FFFFFF)
+  //                           : const Color(0xFFE5E7EB),
+  //                     ),
+  //                   ),
+  //                   child: DropdownButtonHideUnderline(
+  //                     child: DropdownButton<String>(
+  //                       value: selectedCategory,
+  //                       isExpanded: true,
+  //                       dropdownColor:
+  //                           isDark ? const Color(0xFF1E293B) : Colors.white,
+  //                       style: TextStyle(
+  //                         color:
+  //                             isDark ? Colors.white : const Color(0xFF1F2937),
+  //                         fontSize: 14,
+  //                       ),
+  //                       items: categories.map((c) {
+  //                         return DropdownMenuItem<String>(
+  //                             value: c, child: Text(c));
+  //                       }).toList(),
+  //                       onChanged: (val) {
+  //                         if (val != null) {
+  //                           setDialogState(() => selectedCategory = val);
+  //                         }
+  //                       },
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 16),
+  //                 Text(
+  //                   AppStrings.fileTypeLabel,
+  //                   style: TextStyle(
+  //                     color: isDark
+  //                         ? const Color(0xFF94A3B8)
+  //                         : const Color(0xFF6B7280),
+  //                     fontSize: 12.5,
+  //                     fontWeight: FontWeight.w600,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 8),
+  //                 Wrap(
+  //                   spacing: 8,
+  //                   children: formats.map((fmt) {
+  //                     final isSelected = selectedFormat == fmt;
+  //                     return ChoiceChip(
+  //                       label: Text(fmt.toUpperCase()),
+  //                       selected: isSelected,
+  //                       selectedColor: const Color(0xFFDE5227),
+  //                       labelStyle: TextStyle(
+  //                         color: isSelected
+  //                             ? Colors.white
+  //                             : (isDark
+  //                                 ? Colors.white70
+  //                                 : const Color(0xFF374151)),
+  //                         fontWeight: FontWeight.w700,
+  //                         fontSize: 12,
+  //                       ),
+  //                       backgroundColor: isDark
+  //                           ? const Color(0xFF0F172A)
+  //                           : const Color(0xFFF3F4F6),
+  //                       onSelected: (sel) {
+  //                         if (sel) {
+  //                           setDialogState(() => selectedFormat = fmt);
+  //                         }
+  //                       },
+  //                     );
+  //                   }).toList(),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //           actions: [
+  //             TextButton(
+  //               onPressed: () => Navigator.of(ctx).pop(),
+  //               child: Text(
+  //                 AppStrings.cancel,
+  //                 style: TextStyle(
+  //                   color: isDark
+  //                       ? const Color(0xFF94A3B8)
+  //                       : const Color(0xFF6B7280),
+  //                 ),
+  //               ),
+  //             ),
+  //             ElevatedButton(
+  //               onPressed: () {
+  //                 final text = nameController.text.trim();
+  //                 if (text.isNotEmpty) {
+  //                   final filename = text.endsWith('.$selectedFormat')
+  //                       ? text
+  //                       : '$text.$selectedFormat';
+  //                   context.read<DocumentsBloc>().add(
+  //                         UploadDocumentEvent(
+  //                           name: filename,
+  //                           category: selectedCategory,
+  //                           extension: selectedFormat,
+  //                           fileSize: '50 KB',
+  //                           description:
+  //                               'Corporate $selectedCategory workspace document.',
+  //                         ),
+  //                       );
+  //                   Navigator.of(ctx).pop();
+  //                   ScaffoldMessenger.of(context).showSnackBar(
+  //                     SnackBar(
+  //                       content:
+  //                           Text('Document "$filename" uploaded successfully'),
+  //                       backgroundColor: const Color(0xFFDE5227),
+  //                       behavior: SnackBarBehavior.floating,
+  //                     ),
+  //                   );
+  //                 }
+  //               },
+  //               style: ElevatedButton.styleFrom(
+  //                 backgroundColor: const Color(0xFFDE5227),
+  //                 foregroundColor: Colors.white,
+  //                 shape: RoundedRectangleBorder(
+  //                     borderRadius: BorderRadius.circular(10)),
+  //               ),
+  //               child: const Text(AppStrings.upload),
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 
   // void _handleNavigation(int index) {
   //   if (index == 0) {
@@ -1314,6 +1326,17 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                                       .read<DocumentsBloc>()
                                       .add(SelectDocumentEvent(doc.id));
                                 },
+                                onDoubleTap: () {
+                                  final extension = doc.extension.toLowerCase();
+
+                                  if (extension == 'xlsx' ||
+                                      extension == 'xls') {
+                                    setState(() {
+                                      _isExcelEditing = true;
+                                      _editingDocumentId = doc.id;
+                                    });
+                                  }
+                                },
                               );
                             },
                           ),
@@ -1323,19 +1346,59 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         ),
 
         // Right Column: Document Details Panel (or Empty state)
+        // Expanded(
+        //   child: selectedDoc == null
+        //       ? DocumentEmptyPreview(isDarkMode: _isDarkMode)
+        //       : DocumentPreviewPanel(
+        //           document: selectedDoc,
+        //           isDarkMode: _isDarkMode,
+        //           isMobile: false,
+        //           onClose: () {
+        //             context
+        //                 .read<DocumentsBloc>()
+        //                 .add(const ClearSelectedDocumentEvent());
+        //           },
+        //         ),
+        // ),
+
         Expanded(
-          child: selectedDoc == null
-              ? DocumentEmptyPreview(isDarkMode: _isDarkMode)
-              : DocumentPreviewPanel(
-                  document: selectedDoc,
-                  isDarkMode: _isDarkMode,
-                  isMobile: false,
+          child: _isExcelEditing &&
+                  selectedDoc != null &&
+                  selectedDoc.id == _editingDocumentId
+              ?
+              // ExcelEditorPanel(
+              //     documentName: selectedDoc.name,
+              //     onClose: () {
+              //       setState(() {
+              //         _isExcelEditing = false;
+              //         _editingDocumentId = null;
+              //       });
+              //     }, fileBytes: null,
+              //   )
+              ExcelEditorPanel(
+                  documentName: selectedDoc.name,
+                  fileBytes: state.fileBytesByDocumentId[selectedDoc.id],
                   onClose: () {
-                    context
-                        .read<DocumentsBloc>()
-                        .add(const ClearSelectedDocumentEvent());
+                    setState(() {
+                      _isExcelEditing = false;
+                      _editingDocumentId = null;
+                    });
                   },
-                ),
+                )
+              : selectedDoc == null
+                  ? DocumentEmptyPreview(
+                      isDarkMode: _isDarkMode,
+                    )
+                  : DocumentPreviewPanel(
+                      document: selectedDoc,
+                      isDarkMode: _isDarkMode,
+                      isMobile: false,
+                      onClose: () {
+                        context.read<DocumentsBloc>().add(
+                              const ClearSelectedDocumentEvent(),
+                            );
+                      },
+                    ),
         ),
       ],
     );
@@ -1348,13 +1411,49 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     List<AppDocument> documents,
     AppDocument? selectedDoc,
   ) {
+    // if (selectedDoc != null) {
+    //   return DocumentPreviewPanel(
+    //     document: selectedDoc,
+    //     isDarkMode: _isDarkMode,
+    //     isMobile: true,
+    //     onClose: () {
+    //       context.read<DocumentsBloc>().add(const ClearSelectedDocumentEvent());
+    //     },
+    //   );
+    // }
+
     if (selectedDoc != null) {
+      // Show Excel editor when an Excel document is opened.
+      if (_isExcelEditing &&
+          selectedDoc.id == _editingDocumentId &&
+          (selectedDoc.extension.toLowerCase() == 'xlsx' ||
+              selectedDoc.extension.toLowerCase() == 'xls')) {
+        return ExcelEditorPanel(
+          documentName: selectedDoc.name,
+          fileBytes: state.fileBytesByDocumentId[selectedDoc.id],
+          onClose: () {
+            setState(() {
+              _isExcelEditing = false;
+              _editingDocumentId = null;
+            });
+          },
+        );
+      }
+
+      // Show the normal preview for other documents.
       return DocumentPreviewPanel(
         document: selectedDoc,
         isDarkMode: _isDarkMode,
         isMobile: true,
         onClose: () {
-          context.read<DocumentsBloc>().add(const ClearSelectedDocumentEvent());
+          setState(() {
+            _isExcelEditing = false;
+            _editingDocumentId = null;
+          });
+
+          context.read<DocumentsBloc>().add(
+                const ClearSelectedDocumentEvent(),
+              );
         },
       );
     }
@@ -1446,14 +1545,63 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                   separatorBuilder: (ctx, i) => const SizedBox(height: 4),
                   itemBuilder: (ctx, i) {
                     final doc = documents[i];
+                    // return DocumentListItem(
+                    //   document: doc,
+                    //   isSelected: false,
+                    //   isDarkMode: _isDarkMode,
+                    //   onTap: () {
+                    //     context
+                    //         .read<DocumentsBloc>()
+                    //         .add(SelectDocumentEvent(doc.id));
+                    //   },
+                    //   onDoubleTap: () {
+                    //     final extension = doc.extension.toLowerCase();
+
+                    //     if (extension == 'xlsx' || extension == 'xls') {
+                    //       setState(() {
+                    //         _isExcelEditing = true;
+                    //         _editingDocumentId = doc.id;
+                    //       });
+                    //     }
+                    //   },
+                    // );
+
                     return DocumentListItem(
                       document: doc,
-                      isSelected: false,
+                      isSelected: selectedDoc?.id == doc.id,
                       isDarkMode: _isDarkMode,
                       onTap: () {
-                        context
-                            .read<DocumentsBloc>()
-                            .add(SelectDocumentEvent(doc.id));
+                        final extension = doc.extension.toLowerCase();
+
+                        if (extension == 'xlsx' || extension == 'xls') {
+                          setState(() {
+                            _isExcelEditing = true;
+                            _editingDocumentId = doc.id;
+                          });
+                        } else {
+                          setState(() {
+                            _isExcelEditing = false;
+                            _editingDocumentId = null;
+                          });
+                        }
+
+                        context.read<DocumentsBloc>().add(
+                              SelectDocumentEvent(doc.id),
+                            );
+                      },
+                      onDoubleTap: () {
+                        final extension = doc.extension.toLowerCase();
+
+                        if (extension == 'xlsx' || extension == 'xls') {
+                          setState(() {
+                            _isExcelEditing = true;
+                            _editingDocumentId = doc.id;
+                          });
+
+                          context.read<DocumentsBloc>().add(
+                                SelectDocumentEvent(doc.id),
+                              );
+                        }
                       },
                     );
                   },

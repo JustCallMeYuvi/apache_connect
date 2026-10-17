@@ -181,9 +181,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.symmetric(
-                horizontal: isMobile ? 16 : 32,
-                vertical: isMobile ? 20 : 28,
+              // padding: EdgeInsets.symmetric(
+              //   horizontal: isMobile ? 16 : 32,
+              //   vertical: isMobile ? 20 : 28,
+              // ),
+                 padding: EdgeInsets.only(
+                left: isMobile ? 16 : 32,
+                right: isMobile ? 16 : 32,
+                top: isMobile ? 20 : 28,
+                bottom: isMobile ? 88 : 32,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

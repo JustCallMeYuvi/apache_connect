@@ -1,4 +1,6 @@
 
+import 'dart:typed_data';
+
 import 'package:equatable/equatable.dart';
 
 abstract class DocumentsEvent extends Equatable {
@@ -46,6 +48,7 @@ class UploadDocumentEvent extends DocumentsEvent {
   final String extension;
   final String fileSize;
   final String? description;
+    final Uint8List bytes;
 
   const UploadDocumentEvent({
     required this.name,
@@ -53,6 +56,7 @@ class UploadDocumentEvent extends DocumentsEvent {
     required this.extension,
     this.fileSize = '2.4 MB',
     this.description,
+        required this.bytes,
   });
 
   @override

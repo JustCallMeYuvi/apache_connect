@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/network/api_result.dart';
 import '../../../domain/entities/app_document.dart';
@@ -119,6 +121,10 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
     if (result is Success<AppDocument>) {
       final updatedList = List<AppDocument>.from(state.allDocuments)..insert(0, result.data);
       final categorySet = {'All categories', ...updatedList.map((d) => d.category)};
+      final updatedFileBytes = Map<String, Uint8List>.from(
+  state.fileBytesByDocumentId,
+);
+      updatedFileBytes[result.data.id] = event.bytes;
 
       final filtered = _applyFilterAndSearch(
         documents: updatedList,
@@ -132,6 +138,7 @@ class DocumentsBloc extends Bloc<DocumentsEvent, DocumentsState> {
         filteredDocuments: filtered,
         categories: categorySet.toList(),
         selectedDocumentId: result.data.id,
+        fileBytesByDocumentId: updatedFileBytes,
       ));
     } else if (result is Failure<AppDocument>) {
       emit(state.copyWith(

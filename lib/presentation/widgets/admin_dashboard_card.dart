@@ -85,15 +85,18 @@ class _AdminDashboardCardState extends State<AdminDashboardCard> {
             onTap: widget.onTap,
             borderRadius: BorderRadius.circular(16),
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              // padding: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Icon box with peach background and orange line icon
                   Container(
-                    width: 46,
-                    height: 46,
+                    // width: 46,
+                    // height: 46,
+                     width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
                       color: isDark
                           ? const Color(0xFF33201B)
@@ -104,7 +107,9 @@ class _AdminDashboardCardState extends State<AdminDashboardCard> {
                     child: Icon(
                       _getIcon(item.iconType),
                       color: AppColors.primaryOrange,
-                      size: 24,
+                      // size: 24,
+                      size: 22,
+
                     ),
                   ),
 

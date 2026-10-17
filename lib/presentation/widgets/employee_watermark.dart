@@ -20,8 +20,8 @@ class EmployeeWatermark extends StatelessWidget {
 
     final number = employeeNo.trim().isEmpty ? 'Unknown ID' : employeeNo.trim();
 
-  final currentDateTime =
-    DateFormat('yyyy/MM/dd hh:mm a').format(DateTime.now());
+    final currentDateTime =
+        DateFormat('yyyy/MM/dd hh:mm a').format(DateTime.now());
 
     final isDark = isDarkMode;
 

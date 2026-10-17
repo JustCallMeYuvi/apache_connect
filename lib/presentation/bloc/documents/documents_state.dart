@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:equatable/equatable.dart';
 import '../../../domain/entities/app_document.dart';
 
@@ -13,6 +15,7 @@ class DocumentsState extends Equatable {
   final String? selectedDocumentId;
   final String? errorMessage;
   final bool isUploading;
+  final Map<String, Uint8List> fileBytesByDocumentId;
 
   const DocumentsState({
     this.status = DocumentsStatus.initial,
@@ -24,6 +27,7 @@ class DocumentsState extends Equatable {
     this.selectedDocumentId,
     this.errorMessage,
     this.isUploading = false,
+    this.fileBytesByDocumentId = const {},
   });
 
   bool get isLoading => status == DocumentsStatus.loading;
@@ -50,6 +54,7 @@ class DocumentsState extends Equatable {
     bool clearSelected = false,
     String? errorMessage,
     bool? isUploading,
+    Map<String, Uint8List>? fileBytesByDocumentId,
   }) {
     return DocumentsState(
       status: status ?? this.status,
@@ -63,6 +68,8 @@ class DocumentsState extends Equatable {
           : (selectedDocumentId ?? this.selectedDocumentId),
       errorMessage: errorMessage ?? this.errorMessage,
       isUploading: isUploading ?? this.isUploading,
+      fileBytesByDocumentId:
+    fileBytesByDocumentId ?? this.fileBytesByDocumentId,
     );
   }
 
@@ -77,5 +84,6 @@ class DocumentsState extends Equatable {
         selectedDocumentId,
         errorMessage,
         isUploading,
+        fileBytesByDocumentId,
       ];
 }

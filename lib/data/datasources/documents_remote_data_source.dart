@@ -69,6 +69,23 @@ class DocumentsRemoteDataSourceImpl implements DocumentsRemoteDataSource {
         commentsCount: 18,
         versionsCount: 3,
       ),
+      
+      const AppDocumentModel(
+        id: 'doc_gnxtace_assessment',
+        name: 'Gnxtace Technologies - Flutter Developer Assessment.pdf',
+        category: 'HR',
+        extension: 'pdf',
+        version: 'V1.0',
+        date: '02:38 PM',
+        fileSize: '588 KB',
+        owner: 'Syed Imran',
+        modifiedBy: 'Syed Imran',
+        modifiedDate: 'Oct 17, 2026, 02:38 PM',
+        access: 'View · Download · Update · Delete · Comment · Share',
+        description: 'Flutter Developer Assessment document and evaluation.',
+        commentsCount: 0,
+        versionsCount: 1,
+      ),
     ];
   }
 
