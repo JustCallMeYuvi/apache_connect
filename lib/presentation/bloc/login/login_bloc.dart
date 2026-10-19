@@ -1,4 +1,5 @@
 import 'package:apache_connect/domain/entities/user.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/network/api_result.dart';
 import '../../../core/utils/form_validators.dart';
@@ -104,46 +105,118 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
 
 
+// Future<void> _onSubmitted(
+//   LoginSubmitted event,
+//   Emitter<LoginState> emit,
+// ) async {
+//   final usernameError =
+//       FormValidators.validateUsername(state.username);
+//   final passwordError =
+//       FormValidators.validatePassword(state.password);
+
+//   if (usernameError != null || passwordError != null) {
+//     emit(state.copyWith(
+//       usernameError: usernameError,
+//       passwordError: passwordError,
+//       status: LoginStatus.failure,
+//     ));
+//     return;
+//   }
+
+//   emit(state.copyWith(
+//     status: LoginStatus.submitting,
+//     errorMessage: null,
+//     usernameError: null,
+//     passwordError: null,
+//   ));
+
+//   final result = await _loginUseCase.execute(
+//     username: state.username,
+//     password: state.password,
+//     rememberMe: state.rememberMe,
+//   );
+
+//   if (result is Success<User>) {
+//     emit(state.copyWith(
+//       status: LoginStatus.success,
+//       authenticatedUser: result.data,
+//     ));
+//   } else if (result is Failure<User>) {
+//     emit(state.copyWith(
+//       status: LoginStatus.failure,
+//       errorMessage: result.errorMessage,
+//     ));
+//   }
+// }
+
+
 Future<void> _onSubmitted(
   LoginSubmitted event,
   Emitter<LoginState> emit,
 ) async {
-  final usernameError =
-      FormValidators.validateUsername(state.username);
-  final passwordError =
-      FormValidators.validatePassword(state.password);
+  final username = state.username.trim();
+  final password = state.password;
 
+debugPrint('LOGIN DEBUG: Submit event received');
+debugPrint('LOGIN DEBUG: Username = [${state.username}]');
+debugPrint('LOGIN DEBUG: Password length = ${state.password.length}');
+  // 1. Validate input fields.
+  final usernameError =
+      FormValidators.validateUsername(username);
+  final passwordError =
+      FormValidators.validatePassword(password);
+
+debugPrint('LOGIN DEBUG: Username error = $usernameError');
+debugPrint('LOGIN DEBUG: Password error = $passwordError');
   if (usernameError != null || passwordError != null) {
     emit(state.copyWith(
       usernameError: usernameError,
       passwordError: passwordError,
       status: LoginStatus.failure,
+      clearAuthenticatedUser: true,
     ));
     return;
   }
 
+  // 2. Show loading and clear previous errors.
   emit(state.copyWith(
     status: LoginStatus.submitting,
     errorMessage: null,
     usernameError: null,
     passwordError: null,
+    clearAuthenticatedUser: true,
   ));
 
-  final result = await _loginUseCase.execute(
-    username: state.username,
-    password: state.password,
-    rememberMe: state.rememberMe,
-  );
 
-  if (result is Success<User>) {
-    emit(state.copyWith(
-      status: LoginStatus.success,
-      authenticatedUser: result.data,
-    ));
-  } else if (result is Failure<User>) {
+  try {
+    debugPrint('LOGIN DEBUG: Calling LoginUseCase');
+    
+    // 3. Call the login API through the use case.
+    final result = await _loginUseCase.execute(
+      username: username,
+      password: password,
+      rememberMe: state.rememberMe,
+    );
+
+    // 4. Handle API result.
+    if (result is Success<User>) {
+      emit(state.copyWith(
+        status: LoginStatus.success,
+        authenticatedUser: result.data,
+        errorMessage: null,
+      ));
+    } else if (result is Failure<User>) {
+      emit(state.copyWith(
+        status: LoginStatus.failure,
+        errorMessage: result.errorMessage,
+        clearAuthenticatedUser: true,
+      ));
+    }
+  } catch (e) {
     emit(state.copyWith(
       status: LoginStatus.failure,
-      errorMessage: result.errorMessage,
+      errorMessage: 'Login failed. Please try again.',
+      clearAuthenticatedUser: true,
     ));
   }
 }

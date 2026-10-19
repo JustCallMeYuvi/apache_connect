@@ -1,7 +1,7 @@
-
 import 'dart:typed_data';
 
 import 'package:excel/excel.dart' hide Border;
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 
 class ExcelEditorPanel extends StatefulWidget {
@@ -164,14 +164,12 @@ class _ExcelEditorPanelState extends State<ExcelEditorPanel> {
     });
   }
 
-  void _saveWorkbook() {
+  Future<void> _saveWorkbook() async {
     final workbook = _workbook;
-
     if (workbook == null) return;
 
     try {
       final encoded = workbook.encode();
-
       if (encoded == null) {
         throw Exception('Unable to encode workbook.');
       }
@@ -180,23 +178,30 @@ class _ExcelEditorPanelState extends State<ExcelEditorPanel> {
 
       if (widget.onSave != null) {
         widget.onSave!(bytes);
-        setState(() => _isDirty = false);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Workbook exported successfully.'),
-          ),
-        );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Workbook prepared, but no file-saving handler is connected.',
-            ),
-          ),
+        final fileName = widget.documentName
+            .replaceAll(RegExp(r'\.(xlsx|xls)$', caseSensitive: false), '');
+
+        await FileSaver.instance.saveFile(
+          name: fileName,
+          bytes: bytes,
+          fileExtension: 'xlsx',
+          mimeType: MimeType.microsoftExcel,
         );
       }
+
+      if (!mounted) return;
+
+      setState(() => _isDirty = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Excel file exported successfully.'),
+        ),
+      );
     } catch (e) {
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Save failed: $e')),
       );
@@ -219,9 +224,8 @@ class _ExcelEditorPanelState extends State<ExcelEditorPanel> {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: isDark
-                    ? const Color(0xFF334155)
-                    : const Color(0xFFE5E7EB),
+                color:
+                    isDark ? const Color(0xFF334155) : const Color(0xFFE5E7EB),
               ),
             ),
           ),
@@ -254,9 +258,7 @@ class _ExcelEditorPanelState extends State<ExcelEditorPanel> {
                   ),
                 ),
               TextButton.icon(
-                onPressed: _isLoading || _error != null
-                    ? null
-                    : _saveWorkbook,
+                onPressed: _isLoading || _error != null ? null : _saveWorkbook,
                 icon: const Icon(Icons.save_outlined),
                 label: const Text('Save'),
               ),
@@ -304,68 +306,92 @@ class _ExcelEditorPanelState extends State<ExcelEditorPanel> {
               ),
             ),
           Expanded(
-            child: rows.isEmpty
-                ? const Center(child: Text('This worksheet is empty.'))
-                : SingleChildScrollView(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        headingRowColor:
-                            WidgetStateProperty.all(
-                          isDark
-                              ? const Color(0xFF283548)
-                              : const Color(0xFFF1F5F9),
-                        ),
-                        columns: List.generate(
-                          rows
-                              .map((row) => row.length)
-                              .fold<int>(0, (a, b) => a > b ? a : b),
-                          (column) => DataColumn(
-                            label: Text(
-                              _columnName(column),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
+            child: Container(
+              width: double.infinity,
+              color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
+              child: rows.isEmpty
+                  ? const Center(
+                      child: Text('This worksheet is empty.'),
+                    )
+                  : SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          headingRowColor: WidgetStateProperty.all(
+                            isDark
+                                ? const Color(0xFF283548)
+                                : const Color(0xFFE2E8F0),
+                          ),
+                          dataRowColor: WidgetStateProperty.all(
+                            isDark ? const Color(0xFF1E293B) : Colors.white,
+                          ),
+                          border: TableBorder.all(
+                            color: isDark
+                                ? const Color(0xFF334155)
+                                : const Color(0xFFCBD5E1),
+                            width: 0.5,
+                          ),
+                          columns: List.generate(
+                            rows
+                                .map((row) => row.length)
+                                .fold<int>(0, (a, b) => a > b ? a : b),
+                            (column) => DataColumn(
+                              label: Text(
+                                _columnName(column),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF1E293B),
+                                ),
                               ),
                             ),
                           ),
+                          rows: List.generate(rows.length, (rowIndex) {
+                            final row = rows[rowIndex];
+
+                            final maxColumns =
+                                rows.map((r) => r.length).fold<int>(
+                                      0,
+                                      (a, b) => a > b ? a : b,
+                                    );
+
+                            return DataRow(
+                              cells: List.generate(maxColumns, (columnIndex) {
+                                final value = columnIndex < row.length
+                                    ? _cellText(row[columnIndex])
+                                    : '';
+
+                                return DataCell(
+                                  ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      minWidth: 80,
+                                      maxWidth: 220,
+                                    ),
+                                    child: Text(
+                                      value,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: isDark
+                                            ? Colors.white70
+                                            : const Color(0xFF334155),
+                                      ),
+                                    ),
+                                  ),
+                                  onTap: () => _editCell(
+                                    rowIndex,
+                                    columnIndex,
+                                  ),
+                                );
+                              }),
+                            );
+                          }),
                         ),
-                        rows: List.generate(rows.length, (rowIndex) {
-                          final row = rows[rowIndex];
-
-                          final maxColumns = rows
-                              .map((r) => r.length)
-                              .fold<int>(
-                                0,
-                                (a, b) => a > b ? a : b,
-                              );
-
-                          return DataRow(
-                            cells: List.generate(maxColumns, (columnIndex) {
-                              final value = columnIndex < row.length
-                                  ? _cellText(row[columnIndex])
-                                  : '';
-
-                              return DataCell(
-                                ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    minWidth: 80,
-                                    maxWidth: 220,
-                                  ),
-                                  child: Text(
-                                    value,
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                onTap: () =>
-                                    _editCell(rowIndex, columnIndex),
-                              );
-                            }),
-                          );
-                        }),
                       ),
                     ),
-                  ),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(8),

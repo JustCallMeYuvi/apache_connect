@@ -29,8 +29,10 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     // Pre-populate with screenshot default values for instant preview fidelity
-    _usernameController = TextEditingController(text: 'Yuvi');
-    _passwordController = TextEditingController(text: '••••••••');
+    // _usernameController = TextEditingController(text: 'Yuvi');
+    // _passwordController = TextEditingController(text: '••••••••');
+    _usernameController = TextEditingController();
+    _passwordController = TextEditingController();
 
     // Notify BLoC of initial pre-filled values
     context

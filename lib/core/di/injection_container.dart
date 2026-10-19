@@ -35,6 +35,7 @@
 // }
 
 
+import 'package:apache_connect/core/network/dio_client.dart';
 import 'package:apache_connect/data/datasources/admin_remote_data_source.dart';
 import 'package:apache_connect/data/datasources/documents_remote_data_source.dart';
 import 'package:apache_connect/data/datasources/messages_remote_data_source.dart';
@@ -77,9 +78,14 @@ final sl = GetIt.instance;
 
 Future<void> initDependencies() async {
   // 1. Data Sources
+  // sl.registerLazySingleton<AuthRemoteDataSource>(
+  //   () => AuthRemoteDataSourceImpl(),
+  // );
   sl.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(),
-  );
+  () => AuthRemoteDataSourceImpl(
+    dio: DioClient.instance,
+  ),
+);
   sl.registerLazySingleton<DashboardRemoteDataSource>(
     () => DashboardRemoteDataSourceImpl(),
     

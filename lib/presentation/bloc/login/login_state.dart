@@ -30,6 +30,30 @@ class LoginState extends Equatable {
   bool get isSuccess => status == LoginStatus.success;
   bool get isFailure => status == LoginStatus.failure;
 
+  // LoginState copyWith({
+  //   String? username,
+  //   String? password,
+  //   bool? isPasswordObscured,
+  //   bool? rememberMe,
+  //   LoginStatus? status,
+  //   String? errorMessage,
+  //   String? usernameError,
+  //   String? passwordError,
+  //   User? authenticatedUser,
+  //   bool clearErrors = false,
+  // }) {
+  //   return LoginState(
+  //     username: username ?? this.username,
+  //     password: password ?? this.password,
+  //     isPasswordObscured: isPasswordObscured ?? this.isPasswordObscured,
+  //     rememberMe: rememberMe ?? this.rememberMe,
+  //     status: status ?? this.status,
+  //     errorMessage: clearErrors ? null : (errorMessage ?? this.errorMessage),
+  //     usernameError: clearErrors ? null : (usernameError ?? this.usernameError),
+  //     passwordError: clearErrors ? null : (passwordError ?? this.passwordError),
+  //     authenticatedUser: authenticatedUser ?? this.authenticatedUser,
+  //   );
+  // }
   LoginState copyWith({
     String? username,
     String? password,
@@ -41,6 +65,7 @@ class LoginState extends Equatable {
     String? passwordError,
     User? authenticatedUser,
     bool clearErrors = false,
+    bool clearAuthenticatedUser = false,
   }) {
     return LoginState(
       username: username ?? this.username,
@@ -51,7 +76,9 @@ class LoginState extends Equatable {
       errorMessage: clearErrors ? null : (errorMessage ?? this.errorMessage),
       usernameError: clearErrors ? null : (usernameError ?? this.usernameError),
       passwordError: clearErrors ? null : (passwordError ?? this.passwordError),
-      authenticatedUser: authenticatedUser ?? this.authenticatedUser,
+      authenticatedUser: clearAuthenticatedUser
+          ? null
+          : (authenticatedUser ?? this.authenticatedUser),
     );
   }
 
