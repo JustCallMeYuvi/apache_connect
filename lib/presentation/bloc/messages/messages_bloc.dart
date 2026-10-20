@@ -24,9 +24,41 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     on<FilterTabChangedEvent>(_onFilterTabChanged);
     on<SearchQueryChangedEvent>(_onSearchQueryChanged);
     on<SelectConversationEvent>(_onSelectConversation);
+    // on<ClearSelectedConversationEvent>(_onClearSelectedConversation);
+    // on<SendMessageEvent>(_onSendMessage);
+    // on<CreateGroupEvent>(_onCreateGroup);
     on<ClearSelectedConversationEvent>(_onClearSelectedConversation);
     on<SendMessageEvent>(_onSendMessage);
     on<CreateGroupEvent>(_onCreateGroup);
+
+    on<AttachmentPickingStartedEvent>((event, emit) {
+      emit(state.copyWith(isPickingAttachment: true));
+    });
+
+    on<AttachmentSelectedEvent>((event, emit) {
+      emit(
+        state.copyWith(
+          attachmentName: event.name,
+          attachmentType: event.type,
+          attachmentSize: event.size,
+          attachmentBytes: event.bytes,
+          isPickingAttachment: false,
+        ),
+      );
+    });
+
+    on<AttachmentRemovedEvent>((event, emit) {
+      emit(
+        state.copyWith(
+          clearAttachment: true,
+          isPickingAttachment: false,
+        ),
+      );
+    });
+
+    on<AttachmentPickingFinishedEvent>((event, emit) {
+      emit(state.copyWith(isPickingAttachment: false));
+    });
   }
 
   Future<void> _onLoadMessages(
@@ -122,21 +154,53 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     emit(state.copyWith(clearSelected: true));
   }
 
-  Future<void> _onSendMessage(
-    SendMessageEvent event,
-    Emitter<MessagesState> emit,
-  ) async {
-    final currentConvId = state.selectedConversationId;
-    if (currentConvId == null || event.text.trim().isEmpty) return;
+  // Future<void> _onSendMessage(
+  //   SendMessageEvent event,
+  //   Emitter<MessagesState> emit,
+  // ) async {
+  //   final currentConvId = state.selectedConversationId;
+  //   if (currentConvId == null || event.text.trim().isEmpty) return;
 
-    await _sendMessageUseCase.execute(
-      conversationId: currentConvId,
-      text: event.text.trim(),
-    );
+  //   await _sendMessageUseCase.execute(
+  //     conversationId: currentConvId,
+  //     text: event.text.trim(),
+  //   );
 
-    // Refresh conversations
-    add(const LoadMessagesEvent());
+  //   // Refresh conversations
+  //   add(const LoadMessagesEvent());
+  // }
+ 
+ Future<void> _onSendMessage(
+  SendMessageEvent event,
+  Emitter<MessagesState> emit,
+) async {
+  final text = event.text.trim();
+
+  final hasAttachment = event.attachmentName != null &&
+      event.attachmentName!.trim().isNotEmpty;
+
+  if (text.isEmpty && !hasAttachment) return;
+
+  final result = await _sendMessageUseCase.execute(
+    conversationId: event.conversationId,
+    text: text,
+    attachmentName: event.attachmentName,
+    attachmentType: event.attachmentType,
+    attachmentSize: event.attachmentSize,
+    attachmentUrl: event.attachmentUrl,
+    attachmentBytes: event.attachmentBytes,
+  );
+
+  if (result is Failure<void>) {
+    emit(state.copyWith(errorMessage: result.errorMessage));
+    return;
   }
+
+  emit(state.copyWith(clearAttachment: true));
+  add(const LoadMessagesEvent());
+}
+
+
 
   Future<void> _onCreateGroup(
     CreateGroupEvent event,

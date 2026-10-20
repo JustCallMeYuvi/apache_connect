@@ -30,7 +30,7 @@
 //     this.notificationCount = 6,
 //     this.userInitials = 'Yuvi',
 //     this.actions,
-    
+
 //   });
 
 //   @override
@@ -193,7 +193,7 @@
 //   }
 // }
 
-
+import 'package:apache_connect/domain/entities/user.dart';
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
@@ -213,6 +213,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   final int notificationCount;
   final String userInitials;
   final List<Widget>? actions;
+  final User? user;
 
   const AppTopBar({
     super.key,
@@ -227,6 +228,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.notificationCount = 6,
     this.userInitials = 'Yuvi',
     this.actions,
+    this.user,
   });
 
   @override
@@ -241,7 +243,8 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
         color: isDarkMode ? const Color(0xFF1E293B) : Colors.white,
         border: Border(
           bottom: BorderSide(
-            color: isDarkMode ? const Color(0x1AFFFFFF) : const Color(0xFFE2E8F0),
+            color:
+                isDarkMode ? const Color(0x1AFFFFFF) : const Color(0xFFE2E8F0),
             width: 1,
           ),
         ),
@@ -291,7 +294,8 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
               IconButton(
                 onPressed: onNotificationPressed ??
                     () {
-                      Navigator.of(context).pushReplacementNamed(AppRoutes.notifications);
+                      Navigator.of(context)
+                          .pushReplacementNamed(AppRoutes.notifications);
                     },
                 icon: Icon(
                   Icons.notifications_none_rounded,
@@ -307,7 +311,8 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
                   right: -4,
                   top: -4,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.5, vertical: 1.5),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 4.5, vertical: 1.5),
                     decoration: BoxDecoration(
                       color: AppColors.primaryOrange,
                       borderRadius: BorderRadius.circular(10),
@@ -332,11 +337,14 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
             IconButton(
               onPressed: onThemeToggle,
               icon: Icon(
-                isDarkMode ? Icons.wb_sunny_outlined : Icons.nightlight_round_outlined,
+                isDarkMode
+                    ? Icons.wb_sunny_outlined
+                    : Icons.nightlight_round_outlined,
                 color: isDarkMode ? Colors.amber : AppColors.textDark,
                 size: 20,
               ),
-              tooltip: isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+              tooltip:
+                  isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
             ),
@@ -345,18 +353,42 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
           const SizedBox(width: 18),
 
           // User Avatar: Orange circle with "SI"
+          // InkWell(
+          //   onTap: onProfilePressed ??
+          //       () {
+          //         ScaffoldMessenger.of(context).showSnackBar(
+          //           SnackBar(
+          //             content: const Text('Logged in as Syed Imran (Admin)'),
+          //             behavior: SnackBarBehavior.floating,
+          //             backgroundColor: isDarkMode
+          //                 ? const Color(0xFF334155)
+          //                 : const Color(0xFF1E293B),
+          //           ),
+          //         );
+          //       },
+          //   borderRadius: BorderRadius.circular(20),
+          //   child: Container(
+          //     width: 36,
+          //     height: 36,
+          //     decoration: const BoxDecoration(
+          //       color: AppColors.primaryOrange,
+          //       shape: BoxShape.circle,
+          //     ),
+          //     alignment: Alignment.center,
+          //     child: Text(
+          //       userInitials,
+          //       style: const TextStyle(
+          //         color: Colors.white,
+          //         fontWeight: FontWeight.w700,
+          //         fontSize: 13,
+          //       ),
+          //     ),
+          //   ),
+          // ),
+
+          // Right: User Avatar
           InkWell(
-            onTap: onProfilePressed ??
-                () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Logged in as Syed Imran (Admin)'),
-                      behavior: SnackBarBehavior.floating,
-                      backgroundColor:
-                          isDarkMode ? const Color(0xFF334155) : const Color(0xFF1E293B),
-                    ),
-                  );
-                },
+            onTap: onProfilePressed,
             borderRadius: BorderRadius.circular(20),
             child: Container(
               width: 36,

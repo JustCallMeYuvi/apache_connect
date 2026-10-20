@@ -48,3 +48,40 @@ class LoginSubmitted extends LoginEvent {
 class LoginReset extends LoginEvent {
   const LoginReset();
 }
+
+
+
+/// Dispatched to update personal information from the My Profile screen
+class UpdateProfileEvent extends LoginEvent {
+  final String fullName;
+  final String email;
+  final String phone;
+
+  const UpdateProfileEvent({
+    required this.fullName,
+    required this.email,
+    required this.phone,
+  });
+
+  @override
+  List<Object?> get props => [fullName, email, phone];
+}
+
+/// Dispatched to update the password from the My Profile screen
+class ChangePasswordEvent extends LoginEvent {
+  final String currentPassword;
+  final String newPassword;
+
+  const ChangePasswordEvent({
+    required this.currentPassword,
+    required this.newPassword,
+  });
+
+  @override
+  List<Object?> get props => [currentPassword, newPassword];
+}
+
+/// Dispatched to clear session and sign out
+class SignOutEvent extends LoginEvent {
+  const SignOutEvent();
+}

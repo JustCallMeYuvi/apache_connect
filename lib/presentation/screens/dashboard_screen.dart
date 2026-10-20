@@ -151,11 +151,11 @@
 //                           break;
 
 //                         case 3:
-//                         
+//
 //                           break;
 
 //                         case 4:
-//                           
+//
 //                           break;
 //                       }
 //                     },
@@ -449,6 +449,7 @@
 //   }
 // }
 
+import 'package:apache_connect/presentation/widgets/profile_popup_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/app_colors.dart';
@@ -564,9 +565,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
           onNotificationPressed: () {
             _handleQuickAction(context, 'Notifications Panel (6 Unread)');
           },
-          onProfilePressed: () {
-            _handleQuickAction(context, 'Profile: Yuvi (Admin)');
-          },
+          // onProfilePressed: () {
+          //   _handleQuickAction(context, 'Profile: Yuvi (Admin)');
+          // },
+        onProfilePressed: () {
+  final profile = data?.profile;
+  if (profile == null) return;
+
+  ProfilePopupMenu.show(
+    context,
+    user: profile,
+    isDarkMode: isDarkMode,
+    onOpenProfile: () {
+      widget.onNavItemSelected?.call(5);
+    },
+    onThemeToggle: () {
+      context.read<DashboardBloc>().add(
+        const ToggleDashboardTheme(),
+      );
+    },
+    onSignOut: () => _handleSignOut(context),
+  );
+},
           onSignOut: () => _handleSignOut(context),
           body: SingleChildScrollView(
             padding: EdgeInsets.symmetric(

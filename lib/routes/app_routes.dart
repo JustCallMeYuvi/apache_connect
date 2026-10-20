@@ -4,6 +4,7 @@ import 'package:apache_connect/presentation/screens/documents_screen.dart';
 import 'package:apache_connect/presentation/screens/main_shell_screen.dart';
 import 'package:apache_connect/presentation/screens/messages_screen.dart';
 import 'package:apache_connect/presentation/screens/notifications_screen.dart';
+import 'package:apache_connect/presentation/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import '../presentation/screens/login_screen.dart';
 
@@ -18,6 +19,7 @@ class AppRoutes {
   static const String main = '/main';
   static const String notifications = '/notifications';
    static const String adminDashboard = '/admin';
+    static const String profile = '/profile';
 
   static Map<String, WidgetBuilder> get routes => {
         login: (context) => const LoginScreen(),
@@ -29,5 +31,6 @@ class AppRoutes {
         main: (context) => const MainShellScreen(),
         notifications: (context) => const NotificationsScreen(),
          adminDashboard: (context) => const AdminDashboardScreen(),
+             profile: (context) => const ProfileScreen(),
       };
 }

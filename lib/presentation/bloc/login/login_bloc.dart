@@ -19,6 +19,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LoginRememberMeToggled>(_onRememberMeToggled);
     on<LoginSubmitted>(_onSubmitted);
     on<LoginReset>(_onReset);
+    on<UpdateProfileEvent>(_onUpdateProfile);
+    on<ChangePasswordEvent>(_onChangePassword);
+    on<SignOutEvent>(_onSignOut);
   }
 
   void _onUsernameChanged(
@@ -223,6 +226,35 @@ debugPrint('LOGIN DEBUG: Password error = $passwordError');
 
   void _onReset(
     LoginReset event,
+    Emitter<LoginState> emit,
+  ) {
+    emit(const LoginState());
+  }
+
+  
+
+  void _onUpdateProfile(
+    UpdateProfileEvent event,
+    Emitter<LoginState> emit,
+  ) {
+    final current = state.currentUser;
+    final updated = current.copyWith(
+      displayName: event.fullName.trim(),
+      email: event.email.trim(),
+      phone: event.phone.trim(),
+    );
+    emit(state.copyWith(authenticatedUser: updated));
+  }
+
+  void _onChangePassword(
+    ChangePasswordEvent event,
+    Emitter<LoginState> emit,
+  ) {
+    // In production, invoke change password usecase or endpoint
+  }
+
+  void _onSignOut(
+    SignOutEvent event,
     Emitter<LoginState> emit,
   ) {
     emit(const LoginState());

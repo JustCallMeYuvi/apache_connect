@@ -2,6 +2,25 @@ import 'package:equatable/equatable.dart';
 
 enum ChatFilterType { all, direct, groups }
 
+// class ChatMessage extends Equatable {
+//   final String id;
+//   final String senderName;
+//   final String text;
+//   final String timestamp;
+//   final bool isMe;
+
+//   const ChatMessage({
+//     required this.id,
+//     required this.senderName,
+//     required this.text,
+//     required this.timestamp,
+//     required this.isMe,
+//   });
+
+//   @override
+//   List<Object?> get props => [id, senderName, text, timestamp, isMe];
+// }
+
 class ChatMessage extends Equatable {
   final String id;
   final String senderName;
@@ -9,18 +28,50 @@ class ChatMessage extends Equatable {
   final String timestamp;
   final bool isMe;
 
+  // Attachment metadata
+  final String? attachmentName;
+  final String? attachmentType;
+  final int? attachmentSize;
+  final String? attachmentUrl;
+
   const ChatMessage({
     required this.id,
     required this.senderName,
     required this.text,
     required this.timestamp,
     required this.isMe,
+    this.attachmentName,
+    this.attachmentType,
+    this.attachmentSize,
+    this.attachmentUrl,
   });
 
-  @override
-  List<Object?> get props => [id, senderName, text, timestamp, isMe];
-}
+  bool get hasAttachment =>
+      attachmentName != null && attachmentName!.trim().isNotEmpty;
 
+  String get formattedAttachmentSize {
+    final size = attachmentSize ?? 0;
+
+    if (size >= 1024 * 1024) {
+      return '${(size / (1024 * 1024)).toStringAsFixed(1)} MB';
+    }
+
+    return '${(size / 1024).toStringAsFixed(1)} KB';
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        senderName,
+        text,
+        timestamp,
+        isMe,
+        attachmentName,
+        attachmentType,
+        attachmentSize,
+        attachmentUrl,
+      ];
+}
 class ChatConversation extends Equatable {
   final String id;
   final String name;

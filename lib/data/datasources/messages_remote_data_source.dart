@@ -2,8 +2,18 @@ import '../models/chat_conversation_model.dart';
 
 abstract class MessagesRemoteDataSource {
   Future<List<ChatConversationModel>> fetchConversations();
-  Future<void> sendMessage({required String conversationId, required String text});
-  Future<ChatConversationModel> createGroup({required String name, required List<String> memberNames});
+  // Future<void> sendMessage({required String conversationId, required String text});
+  Future<void> sendMessage({
+    required String conversationId,
+    required String text,
+    String? attachmentName,
+    String? attachmentType,
+    int? attachmentSize,
+    String? attachmentUrl,
+    List<int>? attachmentBytes,
+  });
+  Future<ChatConversationModel> createGroup(
+      {required String name, required List<String> memberNames});
 }
 
 class MessagesRemoteDataSourceImpl implements MessagesRemoteDataSource {
@@ -29,7 +39,8 @@ class MessagesRemoteDataSourceImpl implements MessagesRemoteDataSource {
           ChatMessageModel(
             id: 'm1',
             senderName: 'Safety Officer',
-            text: 'Please review the updated safety audit protocols before Friday.',
+            text:
+                'Please review the updated safety audit protocols before Friday.',
             timestamp: '02:30 PM',
             isMe: false,
           ),
@@ -124,7 +135,8 @@ class MessagesRemoteDataSourceImpl implements MessagesRemoteDataSource {
           ChatMessageModel(
             id: 'm9',
             senderName: 'Syed Imran',
-            text: 'Ravi, please verify the logistics manifest for Pune factory shipment.',
+            text:
+                'Ravi, please verify the logistics manifest for Pune factory shipment.',
             timestamp: '02:20 PM',
             isMe: true,
           ),
@@ -147,32 +159,107 @@ class MessagesRemoteDataSourceImpl implements MessagesRemoteDataSource {
   }
 
   @override
-  Future<void> sendMessage({required String conversationId, required String text}) async {
-    final index = _cachedConversations.indexWhere((c) => c.id == conversationId);
-    if (index != -1) {
-      final conv = _cachedConversations[index];
-      final newMsg = ChatMessageModel(
-        id: 'msg_${DateTime.now().millisecondsSinceEpoch}',
-        senderName: 'Syed Imran',
-        text: text,
-        timestamp: 'Just now',
-        isMe: true,
-      );
-      final updatedMessages = List<ChatMessageModel>.from(conv.messages)..add(newMsg);
-      _cachedConversations[index] = ChatConversationModel(
-        id: conv.id,
-        name: conv.name,
-        lastMessage: text,
-        time: 'Just now',
-        unreadCount: 0,
-        isGroup: conv.isGroup,
-        isOnline: conv.isOnline,
-        initials: conv.initials,
-        colorHex: conv.colorHex,
-        messages: updatedMessages,
-      );
-    }
+  // Future<void> sendMessage({required String conversationId, required String text})
+  // Future<void> sendMessage({
+  //   required String conversationId,
+  //   required String text,
+  //   String? attachmentName,
+  //   String? attachmentType,
+  //   int? attachmentSize,
+  //   String? attachmentUrl,
+  //   List<int>? attachmentBytes,
+  // }) async {
+  //   final index =
+  //       _cachedConversations.indexWhere((c) => c.id == conversationId);
+  //   if (index != -1) {
+  //     final conv = _cachedConversations[index];
+  //     final newMsg = ChatMessageModel(
+  //       id: 'msg_${DateTime.now().millisecondsSinceEpoch}',
+  //       senderName: 'Syed Imran',
+  //       text: text,
+  //       timestamp: 'Just now',
+  //       isMe: true,
+  //     );
+
+
+  //     final updatedMessages = List<ChatMessageModel>.from(conv.messages)
+  //       ..add(newMsg);
+  //     _cachedConversations[index] = ChatConversationModel(
+  //       id: conv.id,
+  //       name: conv.name,
+  //       lastMessage: text,
+  //       time: 'Just now',
+  //       unreadCount: 0,
+  //       isGroup: conv.isGroup,
+  //       isOnline: conv.isOnline,
+  //       initials: conv.initials,
+  //       colorHex: conv.colorHex,
+  //       messages: updatedMessages,
+  //     );
+  //   }
+  // }
+
+
+Future<void> sendMessage({
+  required String conversationId,
+  required String text,
+  String? attachmentName,
+  String? attachmentType,
+  int? attachmentSize,
+  String? attachmentUrl,
+  List<int>? attachmentBytes,
+}) async {
+  final index = _cachedConversations.indexWhere(
+    (c) => c.id == conversationId,
+  );
+
+  if (index == -1) {
+    throw Exception('Conversation not found: $conversationId');
   }
+
+  final conv = _cachedConversations[index];
+  final messageText = text.trim();
+
+  final hasAttachment = attachmentName != null &&
+      attachmentName.trim().isNotEmpty;
+
+  // Don't send an empty message without an attachment.
+  if (messageText.isEmpty && !hasAttachment) {
+    return;
+  }
+
+  final newMsg = ChatMessageModel(
+    id: 'msg_${DateTime.now().millisecondsSinceEpoch}',
+    senderName: 'Syed Imran',
+    text: messageText,
+    timestamp: 'Just now',
+    isMe: true,
+    attachmentName: attachmentName,
+    attachmentType: attachmentType,
+    attachmentSize: attachmentSize,
+    attachmentUrl: attachmentUrl,
+  );
+
+  final updatedMessages = [
+    ...conv.messages,
+    newMsg,
+  ];
+
+  _cachedConversations[index] = ChatConversationModel(
+    id: conv.id,
+    name: conv.name,
+    lastMessage: hasAttachment
+        ? (messageText.isNotEmpty ? messageText : attachmentName)
+        : messageText,
+    time: 'Just now',
+    unreadCount: 0,
+    isGroup: conv.isGroup,
+    isOnline: conv.isOnline,
+    initials: conv.initials,
+    colorHex: conv.colorHex,
+    messages: updatedMessages,
+  );
+}
 
   @override
   Future<ChatConversationModel> createGroup({

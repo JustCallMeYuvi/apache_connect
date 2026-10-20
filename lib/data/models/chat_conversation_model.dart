@@ -1,5 +1,34 @@
 import '../../domain/entities/chat_conversation.dart';
 
+// class ChatMessageModel extends ChatMessage {
+//   const ChatMessageModel({
+//     required super.id,
+//     required super.senderName,
+//     required super.text,
+//     required super.timestamp,
+//     required super.isMe,
+//   });
+
+//   factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
+//     return ChatMessageModel(
+//       id: json['id'] as String? ?? '',
+//       senderName: json['sender_name'] as String? ?? '',
+//       text: json['text'] as String? ?? '',
+//       timestamp: json['timestamp'] as String? ?? '',
+//       isMe: json['is_me'] as bool? ?? false,
+//     );
+//   }
+
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'id': id,
+//       'sender_name': senderName,
+//       'text': text,
+//       'timestamp': timestamp,
+//       'is_me': isMe,
+//     };
+//   }
+// }
 class ChatMessageModel extends ChatMessage {
   const ChatMessageModel({
     required super.id,
@@ -7,6 +36,10 @@ class ChatMessageModel extends ChatMessage {
     required super.text,
     required super.timestamp,
     required super.isMe,
+    super.attachmentName,
+    super.attachmentType,
+    super.attachmentSize,
+    super.attachmentUrl,
   });
 
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
@@ -16,6 +49,10 @@ class ChatMessageModel extends ChatMessage {
       text: json['text'] as String? ?? '',
       timestamp: json['timestamp'] as String? ?? '',
       isMe: json['is_me'] as bool? ?? false,
+      attachmentName: json['attachment_name'] as String?,
+      attachmentType: json['attachment_type'] as String?,
+      attachmentSize: json['attachment_size'] as int?,
+      attachmentUrl: json['attachment_url'] as String?,
     );
   }
 
@@ -26,6 +63,10 @@ class ChatMessageModel extends ChatMessage {
       'text': text,
       'timestamp': timestamp,
       'is_me': isMe,
+      'attachment_name': attachmentName,
+      'attachment_type': attachmentType,
+      'attachment_size': attachmentSize,
+      'attachment_url': attachmentUrl,
     };
   }
 }

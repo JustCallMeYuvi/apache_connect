@@ -46,6 +46,7 @@
 
 import 'package:apache_connect/presentation/screens/admin_dashboard_screen.dart';
 import 'package:apache_connect/presentation/screens/notifications_screen.dart';
+import 'package:apache_connect/presentation/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'dashboard_screen.dart';
@@ -68,6 +69,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
     DocumentsScreen(onNavItemSelected: _onNavItemSelected),
     NotificationsScreen(onNavItemSelected: _onNavItemSelected),
     AdminDashboardScreen(onNavItemSelected: _onNavItemSelected), // 4
+    ProfileScreen(onNavItemSelected: _onNavItemSelected),
   ];
 
   void _onNavItemSelected(int index) {

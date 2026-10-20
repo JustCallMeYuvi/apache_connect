@@ -20,20 +20,47 @@ class MessagesRepositoryImpl implements MessagesRepository {
   }
 
   @override
-  Future<ApiResult<void>> sendMessage({
-    required String conversationId,
-    required String text,
-  }) async {
-    try {
-      await remoteDataSource.sendMessage(
-        conversationId: conversationId,
-        text: text,
-      );
-      return const Success(null);
-    } catch (e) {
-      return Failure(e.toString().replaceAll('Exception: ', ''));
-    }
+  // Future<ApiResult<void>> sendMessage({
+  //   required String conversationId,
+  //   required String text,
+  // }) async {
+  //   try {
+  //     await remoteDataSource.sendMessage(
+  //       conversationId: conversationId,
+  //       text: text,
+  //     );
+  //     return const Success(null);
+  //   } catch (e) {
+  //     return Failure(e.toString().replaceAll('Exception: ', ''));
+  //   }
+  // }
+  
+@override
+Future<ApiResult<void>> sendMessage({
+  required String conversationId,
+  required String text,
+  String? attachmentName,
+  String? attachmentType,
+  int? attachmentSize,
+  String? attachmentUrl,
+  List<int>? attachmentBytes,
+}) async {
+  try {
+    await remoteDataSource.sendMessage(
+      conversationId: conversationId,
+      text: text,
+      attachmentName: attachmentName,
+      attachmentType: attachmentType,
+      attachmentSize: attachmentSize,
+      attachmentUrl: attachmentUrl,
+      attachmentBytes: attachmentBytes,
+    );
+
+    return const Success(null);
+  } catch (e) {
+    return Failure(e.toString().replaceAll('Exception: ', ''));
   }
+}
 
   @override
   Future<ApiResult<ChatConversation>> createGroup({

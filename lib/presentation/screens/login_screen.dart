@@ -81,25 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       body: BlocConsumer<LoginBloc, LoginState>(
-        // listener: (context, state) {
-        //   if (state.isFailure && state.errorMessage != null) {
-        //     ScaffoldMessenger.of(context).showSnackBar(
-        //       SnackBar(
-        //         content: Text(state.errorMessage!),
-        //         backgroundColor: AppColors.error,
-        //         behavior: SnackBarBehavior.floating,
-        //       ),
-        //     );
-        //   } else if (state.isSuccess) {
-        //     ScaffoldMessenger.of(context).showSnackBar(
-        //       SnackBar(
-        //         content: Text('${AppStrings.loginSuccess} (ID: ${state.authenticatedUser?.id})'),
-        //         backgroundColor: AppColors.success,
-        //         behavior: SnackBarBehavior.floating,
-        //       ),
-        //     );
-        //   }
-        // },
+        
 
         // listener: (context, state) {
         //   if (state.isFailure && state.errorMessage != null) {
@@ -110,79 +92,50 @@ class _LoginScreenState extends State<LoginScreen> {
         //         behavior: SnackBarBehavior.floating,
         //       ),
         //     );
-        //   } else if (state.isSuccess) {
-        //     ScaffoldMessenger.of(context).showSnackBar(
-        //       SnackBar(
-        //         content: Text(
-        //           '${AppStrings.loginSuccess} '
-        //           '(ID: ${state.authenticatedUser?.id})',
-        //         ),
-        //         backgroundColor: AppColors.success,
-        //         behavior: SnackBarBehavior.floating,
-        //       ),
-        //     );
+        //   }
+         
 
-        //     Navigator.pushReplacementNamed(
-        //       context,
-        //       // AppRoutes.dashboard,
-        //       AppRoutes.main,
-        //     );
+        //   else if (state.isSuccess) {
+        //     // Clear any existing SnackBars before navigation.
+        //     final messenger = ScaffoldMessenger.of(context);
+        //     messenger.clearSnackBars();
+
+        //     // Navigate to the main screen.
+        //     Navigator.of(context).pushReplacementNamed(AppRoutes.main);
+
+        //     // Do not show a SnackBar using the old login screen context
+        //     // after the route has been replaced.
         //   }
         // },
+        
+listenWhen: (previous, current) {
+  return previous.status != current.status ||
+      previous.errorMessage != current.errorMessage;
+},
 
-        listener: (context, state) {
-          if (state.isFailure && state.errorMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage!),
-                backgroundColor: AppColors.error,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          }
-          // else if (state.isSuccess) {
-          //   Navigator.of(context).pushReplacementNamed(
-          //     AppRoutes.main,
-          //   );
-          // }
-          // else if (state.isSuccess) {
-          //   final employeeId = state.authenticatedUser?.id;
+listener: (context, state) {
+  if (state.isFailure && state.errorMessage != null) {
+    final messenger = ScaffoldMessenger.of(context);
 
-          //   // Remove any existing SnackBar before navigating.
-          //   ScaffoldMessenger.of(context).clearSnackBars();
+    // Replace any currently displayed SnackBar.
+    messenger.hideCurrentSnackBar();
 
-          //   Navigator.of(context).pushReplacementNamed(
-          //     AppRoutes.main,
-          //   );
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(state.errorMessage!),
+        backgroundColor: AppColors.error,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  } else if (state.isSuccess) {
+    ScaffoldMessenger.of(context).clearSnackBars();
 
-          //   // Show the success message after navigation.
-          //   WidgetsBinding.instance.addPostFrameCallback((_) {
-          //     final messenger = ScaffoldMessenger.maybeOf(context);
+    Navigator.of(context).pushReplacementNamed(
+      AppRoutes.main,
+    );
+  }
+},
 
-          //     messenger?.showSnackBar(
-          //       SnackBar(
-          //         content: Text(
-          //           '${AppStrings.loginSuccess} (ID: $employeeId)',
-          //         ),
-          //         backgroundColor: AppColors.success,
-          //         behavior: SnackBarBehavior.floating,
-          //       ),
-          //     );
-          //   });
-          // }
-
-          else if (state.isSuccess) {
-            // Clear any existing SnackBars before navigation.
-            final messenger = ScaffoldMessenger.of(context);
-            messenger.clearSnackBars();
-
-            // Navigate to the main screen.
-            Navigator.of(context).pushReplacementNamed(AppRoutes.main);
-
-            // Do not show a SnackBar using the old login screen context
-            // after the route has been replaced.
-          }
-        },
 
         builder: (context, state) {
           return Stack(

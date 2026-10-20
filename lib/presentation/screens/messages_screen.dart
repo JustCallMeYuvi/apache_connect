@@ -789,8 +789,38 @@ class _MessagesScreenState extends State<MessagesScreen> {
                         .read<MessagesBloc>()
                         .add(const ClearSelectedConversationEvent());
                   },
+                  // onSendMessage: (msg) {
+                  //   context.read<MessagesBloc>().add(SendMessageEvent(msg));
+                  // },
+
                   onSendMessage: (msg) {
-                    context.read<MessagesBloc>().add(SendMessageEvent(msg));
+                    context.read<MessagesBloc>().add(
+                          SendMessageEvent(
+                            msg,
+                            conversationId: selectedConv.id,
+                          ),
+                        );
+                  },
+
+                  onSendWithAttachment: (
+                    msg, {
+                    attachmentName,
+                    attachmentType,
+                    attachmentSize,
+                    attachmentUrl,
+                    attachmentBytes,
+                  }) {
+                    context.read<MessagesBloc>().add(
+                          SendMessageEvent(
+                            msg,
+                            conversationId: selectedConv.id,
+                            attachmentName: attachmentName,
+                            attachmentType: attachmentType,
+                            attachmentSize: attachmentSize,
+                            attachmentUrl: attachmentUrl,
+                            attachmentBytes: attachmentBytes,
+                          ),
+                        );
                   },
                 )
               : ChatEmptyView(isDarkMode: _isDarkMode),
@@ -813,8 +843,38 @@ class _MessagesScreenState extends State<MessagesScreen> {
               .read<MessagesBloc>()
               .add(const ClearSelectedConversationEvent());
         },
+        // onSendMessage: (msg) {
+        //   context.read<MessagesBloc>().add(SendMessageEvent(msg));
+        // },
+
         onSendMessage: (msg) {
-          context.read<MessagesBloc>().add(SendMessageEvent(msg));
+          context.read<MessagesBloc>().add(
+                SendMessageEvent(
+                  msg,
+                  conversationId: selectedConv.id,
+                ),
+              );
+        },
+
+        onSendWithAttachment: (
+          msg, {
+          attachmentName,
+          attachmentType,
+          attachmentSize,
+          attachmentUrl,
+          attachmentBytes,
+        }) {
+          context.read<MessagesBloc>().add(
+                SendMessageEvent(
+                  msg,
+                  conversationId: selectedConv.id,
+                  attachmentName: attachmentName,
+                  attachmentType: attachmentType,
+                  attachmentSize: attachmentSize,
+                  attachmentUrl: attachmentUrl,
+                  attachmentBytes: attachmentBytes,
+                ),
+              );
         },
       );
     }

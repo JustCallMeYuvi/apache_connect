@@ -54,6 +54,24 @@ class LoginState extends Equatable {
   //     authenticatedUser: authenticatedUser ?? this.authenticatedUser,
   //   );
   // }
+
+    User get currentUser {
+    return authenticatedUser ??
+        const User(
+          id: 'APC1001',
+          username: 'imran@apache.co',
+          email: 'imran@apache.co',
+          displayName: 'Syed Imran',
+          token: '58v0xkgw••••••',
+          phone: '+91 90000 01000',
+          barcode: 'APC1001',
+          department: 'IT',
+          factory: 'APC',
+          designation: 'System Admin',
+          role: 'Admin',
+          status: 'Active',
+        );
+  }
   LoginState copyWith({
     String? username,
     String? password,
