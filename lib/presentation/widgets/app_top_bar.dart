@@ -214,6 +214,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   final String userInitials;
   final List<Widget>? actions;
   final User? user;
+  final ValueChanged<int>? onNavItemSelected;
 
   const AppTopBar({
     super.key,
@@ -229,6 +230,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.userInitials = 'Yuvi',
     this.actions,
     this.user,
+    this.onNavItemSelected,
   });
 
   @override
@@ -236,6 +238,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final menuTextColor = isDarkMode ? Colors.white : const Color(0xFF1E293B);
     return Container(
       height: 60,
       padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24),
@@ -387,9 +390,141 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
           // ),
 
           // Right: User Avatar
-          InkWell(
-            onTap: onProfilePressed,
-            borderRadius: BorderRadius.circular(20),
+          // InkWell(
+          //   onTap: onProfilePressed,
+          //   borderRadius: BorderRadius.circular(20),
+          //   child: Container(
+          //     width: 36,
+          //     height: 36,
+          //     decoration: const BoxDecoration(
+          //       color: AppColors.primaryOrange,
+          //       shape: BoxShape.circle,
+          //     ),
+          //     alignment: Alignment.center,
+          //     child: Text(
+          //       userInitials,
+          //       style: const TextStyle(
+          //         color: Colors.white,
+          //         fontWeight: FontWeight.w700,
+          //         fontSize: 13,
+          //       ),
+          //     ),
+          //   ),
+          // ),
+
+          // Common profile menu for every screen
+          PopupMenuButton<String>(
+            tooltip: 'Profile menu',
+            offset: const Offset(0, 44),
+            color: isDarkMode ? const Color(0xFF1E293B) : Colors.white,
+            elevation: 8,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            onSelected: (value) {
+              switch (value) {
+                case 'profile':
+                case 'password':
+                  // Open ProfileScreen for both actions.
+                  onNavItemSelected?.call(5);
+                  break;
+
+                case 'theme':
+                  onThemeToggle?.call();
+                  break;
+
+                case 'signout':
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    AppRoutes.login,
+                    (route) => false,
+                  );
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem<String>(
+                enabled: false,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Yuvaraj',
+                      style: TextStyle(
+                        color: menuTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const Text(
+                      'Admin',
+                      style: TextStyle(
+                        color: Colors.blueGrey,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              PopupMenuItem<String>(
+                value: 'profile',
+                child: Row(
+                  children: [
+                    Icon(Icons.person_outline, color: menuTextColor),
+                    const SizedBox(width: 12),
+                    Text(
+                      'My profile',
+                      style: TextStyle(color: menuTextColor),
+                    ),
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'password',
+                child: Row(
+                  children: [
+                    Icon(Icons.key_outlined, color: menuTextColor),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Change password',
+                      style: TextStyle(color: menuTextColor),
+                    ),
+                  ],
+                ),
+              ),
+              PopupMenuItem<String>(
+                value: 'theme',
+                child: Row(
+                  children: [
+                    Icon(
+                      isDarkMode
+                          ? Icons.light_mode_outlined
+                          : Icons.dark_mode_outlined,
+                      color: menuTextColor,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      isDarkMode ? 'Light mode' : 'Dark mode',
+                      style: TextStyle(color: menuTextColor),
+                    ),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem<String>(
+                value: 'signout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, color: Colors.red),
+                    SizedBox(width: 12),
+                    Text(
+                      'Sign out',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             child: Container(
               width: 36,
               height: 36,

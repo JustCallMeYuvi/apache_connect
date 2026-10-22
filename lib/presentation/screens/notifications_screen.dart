@@ -6,7 +6,6 @@ import '../../domain/entities/app_notification.dart';
 import '../bloc/notifications/notifications_bloc.dart';
 import '../bloc/notifications/notifications_event.dart';
 import '../bloc/notifications/notifications_state.dart';
-import '../widgets/app_scaffold.dart';
 import '../widgets/notification_details_bottom_sheet.dart';
 import '../widgets/notification_details_panel.dart';
 import '../widgets/notification_list_item.dart';
@@ -25,7 +24,7 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  bool _isDarkMode = false;
+  final bool _isDarkMode = false;
 
   @override
   void initState() {
@@ -89,7 +88,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       builder: (context, state) {
         final notifications = state.notifications;
         final selectedNotif = state.selectedNotification;
-        final unreadCount = state.unreadCount;
+        // final unreadCount = state.unreadCount;
 
         // Auto-select first item on desktop if none selected
         if (!isMobile &&
@@ -103,37 +102,45 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           });
         }
 
-        return AppScaffold(
-          title: AppStrings.notificationsTitle,
-          activeNavIndex: 3, // 3 = Notifications/Alerts
-          isDarkMode: _isDarkMode,
-          onNavItemSelected: widget.onNavItemSelected,
+        // return AppScaffold(
+        //   title: AppStrings.notificationsTitle,
+        //   activeNavIndex: 3, // 3 = Notifications/Alerts
+        //   isDarkMode: _isDarkMode,
+        //   onNavItemSelected: widget.onNavItemSelected,
 
-          notificationCount: unreadCount,
-          onThemeToggle: () {
-            setState(() => _isDarkMode = !_isDarkMode);
-          },
-          onNotificationPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('You have $unreadCount unread notification(s)'),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
-          onProfilePressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Logged in as Syed Imran (Admin)'),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
-          body: isMobile
-              ? _buildMobileContent(context, state, notifications)
-              : _buildDesktopContent(
-                  context, state, notifications, selectedNotif),
-        );
+        //   notificationCount: unreadCount,
+        //   onThemeToggle: () {
+        //     setState(() => _isDarkMode = !_isDarkMode);
+        //   },
+        //   onNotificationPressed: () {
+        //     ScaffoldMessenger.of(context).showSnackBar(
+        //       SnackBar(
+        //         content: Text('You have $unreadCount unread notification(s)'),
+        //         behavior: SnackBarBehavior.floating,
+        //       ),
+        //     );
+        //   },
+        //   onProfilePressed: () {
+        //     ScaffoldMessenger.of(context).showSnackBar(
+        //       const SnackBar(
+        //         content: Text('Logged in as Syed Imran (Admin)'),
+        //         behavior: SnackBarBehavior.floating,
+        //       ),
+        //     );
+        //   },
+        //   body: isMobile
+        //       ? _buildMobileContent(context, state, notifications)
+        //       : _buildDesktopContent(
+        //           context, state, notifications, selectedNotif),
+        // );
+        return isMobile
+            ? _buildMobileContent(context, state, notifications)
+            : _buildDesktopContent(
+                context,
+                state,
+                notifications,
+                selectedNotif,
+              );
       },
     );
   }

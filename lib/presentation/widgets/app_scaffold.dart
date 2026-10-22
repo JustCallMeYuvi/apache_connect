@@ -129,6 +129,11 @@ class _AppScaffoldState extends State<AppScaffold> {
   // }
 
   void _handleNavigation(int index) {
+    if (widget.onNavItemSelected != null) {
+      widget.onNavItemSelected!(index);
+      return;
+    }
+
     // Keep the main application screens inside MainShellScreen.
     // Admin Dashboard must navigate through its named route.
     if (widget.onNavItemSelected != null && index >= 0 && index <= 4) {
@@ -204,9 +209,11 @@ class _AppScaffoldState extends State<AppScaffold> {
           appBar: AppTopBar(
             title: widget.title,
             titleWidget: widget.titleWidget,
+            onNavItemSelected: widget.onNavItemSelected,
             isMobile: true,
             isDarkMode: widget.isDarkMode,
             onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
+            onThemeToggle: widget.onThemeToggle, // ADD THIS
             onNotificationPressed: widget.onNotificationPressed,
             onProfilePressed: widget.onProfilePressed,
             actions: widget.actions,
@@ -253,6 +260,7 @@ class _AppScaffoldState extends State<AppScaffold> {
                   titleWidget: widget.titleWidget,
                   isMobile: false,
                   isDarkMode: widget.isDarkMode,
+                  onNavItemSelected: widget.onNavItemSelected,
                   onMenuPressed: () {
                     // Desktop toggle
                   },

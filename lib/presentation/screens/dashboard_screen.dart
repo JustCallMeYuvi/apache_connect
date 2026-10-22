@@ -449,17 +449,14 @@
 //   }
 // }
 
-import 'package:apache_connect/presentation/widgets/profile_popup_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../domain/entities/dashboard_data.dart';
-import '../../routes/app_routes.dart';
 import '../bloc/dashboard/dashboard_bloc.dart';
 import '../bloc/dashboard/dashboard_event.dart';
 import '../bloc/dashboard/dashboard_state.dart';
-import '../widgets/app_scaffold.dart';
 import '../widgets/dashboard_content_cards.dart';
 import '../widgets/dashboard_summary_card.dart';
 
@@ -512,9 +509,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  void _handleSignOut(BuildContext context) {
-    Navigator.of(context).pushReplacementNamed(AppRoutes.login);
-  }
+  // void _handleSignOut(BuildContext context) {
+  //   Navigator.of(context).pushReplacementNamed(AppRoutes.login);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -554,158 +551,122 @@ class _DashboardScreenState extends State<DashboardScreen> {
         final userName =
             data?.profile.name.split(' ').first ?? AppStrings.defaultUserName;
 
-        return AppScaffold(
-          title: AppStrings.dashboardTitle,
-          activeNavIndex: 0,
-          onNavItemSelected: widget.onNavItemSelected,
-          isDarkMode: isDarkMode,
-          onThemeToggle: () {
-            context.read<DashboardBloc>().add(const ToggleDashboardTheme());
-          },
-          onNotificationPressed: () {
-            _handleQuickAction(context, 'Notifications Panel (6 Unread)');
-          },
-          // onProfilePressed: () {
-          //   _handleQuickAction(context, 'Profile: Yuvi (Admin)');
-          // },
-        onProfilePressed: () {
-  final profile = data?.profile;
-  if (profile == null) return;
-
-  ProfilePopupMenu.show(
-    context,
-    user: profile,
-    isDarkMode: isDarkMode,
-    onOpenProfile: () {
-      widget.onNavItemSelected?.call(5);
-    },
-    onThemeToggle: () {
-      context.read<DashboardBloc>().add(
-        const ToggleDashboardTheme(),
-      );
-    },
-    onSignOut: () => _handleSignOut(context),
-  );
-},
-          onSignOut: () => _handleSignOut(context),
-          body: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: isMobile ? 16 : 28,
-              vertical: isMobile ? 18 : 24,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Greeting Header: "Good morning, Syed 👋"
-                Row(
-                  children: [
-                    Text(
-                      '${AppStrings.greetingPrefix} $userName',
-                      style: TextStyle(
-                        color: isDarkMode ? Colors.white : AppColors.textDark,
-                        fontSize: isMobile ? 22 : 28,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.5,
-                      ),
+        return SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: isMobile ? 16 : 28,
+            vertical: isMobile ? 18 : 24,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Greeting Header: "Good morning, Syed 👋"
+              Row(
+                children: [
+                  Text(
+                    '${AppStrings.greetingPrefix} $userName',
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.white : AppColors.textDark,
+                      fontSize: isMobile ? 22 : 28,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.5,
                     ),
-                    const SizedBox(width: 8),
-                    const Text('👋', style: TextStyle(fontSize: 24)),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  AppStrings.greetingSubtitle,
-                  style: TextStyle(
-                    color: isDarkMode
-                        ? const Color(0xFF94A3B8)
-                        : AppColors.textGray,
-                    fontSize: isMobile ? 13 : 14.5,
-                    fontWeight: FontWeight.w400,
                   ),
+                  const SizedBox(width: 8),
+                  const Text('👋', style: TextStyle(fontSize: 24)),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                AppStrings.greetingSubtitle,
+                style: TextStyle(
+                  color:
+                      isDarkMode ? const Color(0xFF94A3B8) : AppColors.textGray,
+                  fontSize: isMobile ? 13 : 14.5,
+                  fontWeight: FontWeight.w400,
                 ),
+              ),
 
-                const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-                // Four Summary Cards:
-                // Mobile: 2-column grid. Desktop: 4 horizontal columns.
-                if (isMobile)
-                  _buildMobileSummaryGrid(stats, isDarkMode)
-                else
-                  _buildDesktopSummaryRow(stats, isDarkMode),
+              // Four Summary Cards:
+              // Mobile: 2-column grid. Desktop: 4 horizontal columns.
+              if (isMobile)
+                _buildMobileSummaryGrid(stats, isDarkMode)
+              else
+                _buildDesktopSummaryRow(stats, isDarkMode),
 
-                const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-                // Middle Content Cards:
-                // Mobile: Stacked vertically. Desktop: 3 horizontal columns.
-                if (isMobile)
-                  Column(
-                    children: [
-                      RecentDocumentsCard(
+              // Middle Content Cards:
+              // Mobile: Stacked vertically. Desktop: 3 horizontal columns.
+              if (isMobile)
+                Column(
+                  children: [
+                    RecentDocumentsCard(
+                      documents: recentDocs,
+                      isDarkMode: isDarkMode,
+                      onDocumentTap: (doc) =>
+                          _handleQuickAction(context, 'Opening ${doc.name}'),
+                    ),
+                    const SizedBox(height: 18),
+                    RecentMessagesCard(
+                      messages: recentMsgs,
+                      isDarkMode: isDarkMode,
+                      onMessageTap: (msg) => _handleQuickAction(
+                          context, 'Chat with ${msg.sender}'),
+                    ),
+                    const SizedBox(height: 18),
+                    NotificationsCard(
+                      notifications: notifs,
+                      isDarkMode: isDarkMode,
+                      onNotificationTap: (n) =>
+                          _handleQuickAction(context, 'Alert from ${n.sender}'),
+                    ),
+                  ],
+                )
+              else
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: RecentDocumentsCard(
                         documents: recentDocs,
                         isDarkMode: isDarkMode,
                         onDocumentTap: (doc) =>
                             _handleQuickAction(context, 'Opening ${doc.name}'),
                       ),
-                      const SizedBox(height: 18),
-                      RecentMessagesCard(
+                    ),
+                    const SizedBox(width: 18),
+                    Expanded(
+                      child: RecentMessagesCard(
                         messages: recentMsgs,
                         isDarkMode: isDarkMode,
                         onMessageTap: (msg) => _handleQuickAction(
                             context, 'Chat with ${msg.sender}'),
                       ),
-                      const SizedBox(height: 18),
-                      NotificationsCard(
+                    ),
+                    const SizedBox(width: 18),
+                    Expanded(
+                      child: NotificationsCard(
                         notifications: notifs,
                         isDarkMode: isDarkMode,
                         onNotificationTap: (n) => _handleQuickAction(
                             context, 'Alert from ${n.sender}'),
                       ),
-                    ],
-                  )
-                else
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: RecentDocumentsCard(
-                          documents: recentDocs,
-                          isDarkMode: isDarkMode,
-                          onDocumentTap: (doc) => _handleQuickAction(
-                              context, 'Opening ${doc.name}'),
-                        ),
-                      ),
-                      const SizedBox(width: 18),
-                      Expanded(
-                        child: RecentMessagesCard(
-                          messages: recentMsgs,
-                          isDarkMode: isDarkMode,
-                          onMessageTap: (msg) => _handleQuickAction(
-                              context, 'Chat with ${msg.sender}'),
-                        ),
-                      ),
-                      const SizedBox(width: 18),
-                      Expanded(
-                        child: NotificationsCard(
-                          notifications: notifs,
-                          isDarkMode: isDarkMode,
-                          onNotificationTap: (n) => _handleQuickAction(
-                              context, 'Alert from ${n.sender}'),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                const SizedBox(height: 24),
-
-                // 3 Quick Action Cards along the bottom
-                QuickActionsRow(
-                  isDarkMode: isDarkMode,
-                  onActionTap: (action) => _handleQuickAction(context, action),
+                    ),
+                  ],
                 ),
 
-                const SizedBox(height: 32),
-              ],
-            ),
+              const SizedBox(height: 24),
+
+              // 3 Quick Action Cards along the bottom
+              QuickActionsRow(
+                isDarkMode: isDarkMode,
+                onActionTap: (action) => _handleQuickAction(context, action),
+              ),
+
+              const SizedBox(height: 32),
+            ],
           ),
         );
       },

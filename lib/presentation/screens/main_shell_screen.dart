@@ -44,9 +44,11 @@
 //   }
 // }
 
+// 22-10-2026
 import 'package:apache_connect/presentation/screens/admin_dashboard_screen.dart';
 import 'package:apache_connect/presentation/screens/notifications_screen.dart';
 import 'package:apache_connect/presentation/screens/profile_screen.dart';
+import 'package:apache_connect/presentation/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
 
 import 'dashboard_screen.dart';
@@ -62,6 +64,12 @@ class MainShellScreen extends StatefulWidget {
 
 class _MainShellScreenState extends State<MainShellScreen> {
   int _selectedIndex = 0;
+  bool _isDarkMode = false;
+  void _toggleTheme() {
+    setState(() {
+      _isDarkMode = !_isDarkMode;
+    });
+  }
 
   late final List<Widget> _screens = [
     DashboardScreen(onNavItemSelected: _onNavItemSelected),
@@ -83,9 +91,28 @@ class _MainShellScreenState extends State<MainShellScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return IndexedStack(
-      index: _selectedIndex,
-      children: _screens,
+    const titles = [
+      'Dashboard',
+      'Messages',
+      'Documents',
+      'Notifications',
+      'Admin Dashboard',
+      'My Profile',
+    ];
+    // return IndexedStack(
+    //   index: _selectedIndex,
+    //   children: _screens,
+    // );
+    return AppScaffold(
+      title: titles[_selectedIndex],
+      activeNavIndex: _selectedIndex,
+      isDarkMode: _isDarkMode,
+      onThemeToggle: _toggleTheme,
+      onNavItemSelected: _onNavItemSelected,
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _screens,
+      ),
     );
   }
 }

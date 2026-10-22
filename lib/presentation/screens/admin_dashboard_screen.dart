@@ -7,12 +7,11 @@ import '../bloc/admin/admin_dashboard_bloc.dart';
 import '../bloc/admin/admin_dashboard_event.dart';
 import '../bloc/admin/admin_dashboard_state.dart';
 import '../widgets/admin_dashboard_grid.dart';
-import '../widgets/app_scaffold.dart';
 
 /// Complete Admin Dashboard Screen in ApacheConnect following Clean Architecture & BLoC pattern
 /// Recreates the Desktop/Web and Mobile layouts from reference screenshots.
 class AdminDashboardScreen extends StatefulWidget {
-    final ValueChanged<int>? onNavItemSelected;
+  final ValueChanged<int>? onNavItemSelected;
   const AdminDashboardScreen({super.key, this.onNavItemSelected});
 
   @override
@@ -20,7 +19,7 @@ class AdminDashboardScreen extends StatefulWidget {
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
-  bool _isDarkMode = false;
+  final bool _isDarkMode = false;
 
   @override
   void initState() {
@@ -78,7 +77,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               item.description,
               style: TextStyle(
                 fontSize: 14,
-                color: _isDarkMode ? const Color(0xFFCBD5E1) : AppColors.textGray,
+                color:
+                    _isDarkMode ? const Color(0xFFCBD5E1) : AppColors.textGray,
                 height: 1.4,
               ),
             ),
@@ -109,7 +109,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       '${item.title} management ${AppStrings.moduleComingSoon}',
                       style: TextStyle(
                         fontSize: 12.5,
-                        color: _isDarkMode ? Colors.white70 : AppColors.textDark,
+                        color:
+                            _isDarkMode ? Colors.white70 : AppColors.textDark,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -142,126 +143,210 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
     return BlocBuilder<AdminDashboardBloc, AdminDashboardState>(
       builder: (context, state) {
-        return AppScaffold(
-          title: AppStrings.administrationTitle,
-          activeNavIndex: 4, // 4 = Admin dashboard in sidebar
-           onNavItemSelected: widget.onNavItemSelected, // ADD THIS LINE
-          isDarkMode: _isDarkMode,
-          notificationCount: isMobile ? 37 : 36,
-          backgroundColor:
-              _isDarkMode ? AppColors.dashboardDarkBg : const Color(0xFFF7F5F0),
-          onThemeToggle: () {
-            setState(() => _isDarkMode = !_isDarkMode);
+        // return AppScaffold(
+        //   title: AppStrings.administrationTitle,
+        //   activeNavIndex: 4, // 4 = Admin dashboard in sidebar
+        //    onNavItemSelected: widget.onNavItemSelected, // ADD THIS LINE
+        //   isDarkMode: _isDarkMode,
+        //   notificationCount: isMobile ? 37 : 36,
+        //   backgroundColor:
+        //       _isDarkMode ? AppColors.dashboardDarkBg : const Color(0xFFF7F5F0),
+        //   onThemeToggle: () {
+        //     setState(() => _isDarkMode = !_isDarkMode);
+        //   },
+        //   onNotificationPressed: () {
+        //     ScaffoldMessenger.of(context).showSnackBar(
+        //       SnackBar(
+        //         content: Text(
+        //           'You have ${isMobile ? 37 : 36} unread administrative alerts',
+        //         ),
+        //         backgroundColor: AppColors.primaryOrange,
+        //         behavior: SnackBarBehavior.floating,
+        //       ),
+        //     );
+        //   },
+        //   onProfilePressed: () {
+        //     ScaffoldMessenger.of(context).showSnackBar(
+        //       const SnackBar(
+        //         content: Text('Logged in as Syed Imran (Admin)'),
+        //         behavior: SnackBarBehavior.floating,
+        //       ),
+        //     );
+        //   },
+        //   body: RefreshIndicator(
+        //     color: AppColors.primaryOrange,
+        //     onRefresh: () async {
+        //       context
+        //           .read<AdminDashboardBloc>()
+        //           .add(const RefreshAdminStatsEvent());
+        //     },
+        //     child: SingleChildScrollView(
+        //       physics: const AlwaysScrollableScrollPhysics(),
+        //       // padding: EdgeInsets.symmetric(
+        //       //   horizontal: isMobile ? 16 : 32,
+        //       //   vertical: isMobile ? 20 : 28,
+        //       // ),
+        //          padding: EdgeInsets.only(
+        //         left: isMobile ? 16 : 32,
+        //         right: isMobile ? 16 : 32,
+        //         top: isMobile ? 20 : 28,
+        //         bottom: isMobile ? 88 : 32,
+        //       ),
+        //       child: Column(
+        //         crossAxisAlignment: CrossAxisAlignment.start,
+        //         children: [
+        //           // Main Heading: "Admin dashboard" matching Screenshots 1 & 2
+        //           Text(
+        //             AppStrings.adminDashboardHeading,
+        //             style: TextStyle(
+        //               color: _isDarkMode ? Colors.white : AppColors.textDark,
+        //               fontSize: isMobile ? 22 : 24,
+        //               fontWeight: FontWeight.w800,
+        //               letterSpacing: -0.4,
+        //             ),
+        //           ),
+
+        //           SizedBox(height: isMobile ? 18 : 24),
+
+        //           // Cards Content View
+        //           if (state.isLoading)
+        //             const Padding(
+        //               padding: EdgeInsets.symmetric(vertical: 60),
+        //               child: Center(
+        //                 child: CircularProgressIndicator(
+        //                   color: AppColors.primaryOrange,
+        //                 ),
+        //               ),
+        //             )
+        //           else if (state.isFailure)
+        //             Center(
+        //               child: Padding(
+        //                 padding: const EdgeInsets.symmetric(vertical: 40),
+        //                 child: Column(
+        //                   children: [
+        //                     const Icon(
+        //                       Icons.error_outline_rounded,
+        //                       size: 40,
+        //                       color: AppColors.error,
+        //                     ),
+        //                     const SizedBox(height: 12),
+        //                     Text(
+        //                       state.errorMessage ??
+        //                           'Failed to load admin dashboard',
+        //                       style: const TextStyle(
+        //                         color: AppColors.textGray,
+        //                         fontSize: 14,
+        //                       ),
+        //                     ),
+        //                     const SizedBox(height: 16),
+        //                     ElevatedButton(
+        //                       onPressed: () {
+        //                         context
+        //                             .read<AdminDashboardBloc>()
+        //                             .add(const LoadAdminStatsEvent());
+        //                       },
+        //                       style: ElevatedButton.styleFrom(
+        //                         backgroundColor: AppColors.primaryOrange,
+        //                         foregroundColor: Colors.white,
+        //                       ),
+        //                       child: const Text('Retry'),
+        //                     ),
+        //                   ],
+        //                 ),
+        //               ),
+        //             )
+        //           else
+        //             AdminDashboardGrid(
+        //               items: state.items,
+        //               isDarkMode: _isDarkMode,
+        //               onItemTap: (item) => _handleCardTap(context, item),
+        //             ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // );
+        return RefreshIndicator(
+          color: AppColors.primaryOrange,
+          onRefresh: () async {
+            context
+                .read<AdminDashboardBloc>()
+                .add(const RefreshAdminStatsEvent());
           },
-          onNotificationPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'You have ${isMobile ? 37 : 36} unread administrative alerts',
-                ),
-                backgroundColor: AppColors.primaryOrange,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
-          onProfilePressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Logged in as Syed Imran (Admin)'),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
-          body: RefreshIndicator(
-            color: AppColors.primaryOrange,
-            onRefresh: () async {
-              context
-                  .read<AdminDashboardBloc>()
-                  .add(const RefreshAdminStatsEvent());
-            },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              // padding: EdgeInsets.symmetric(
-              //   horizontal: isMobile ? 16 : 32,
-              //   vertical: isMobile ? 20 : 28,
-              // ),
-                 padding: EdgeInsets.only(
-                left: isMobile ? 16 : 32,
-                right: isMobile ? 16 : 32,
-                top: isMobile ? 20 : 28,
-                bottom: isMobile ? 88 : 32,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Main Heading: "Admin dashboard" matching Screenshots 1 & 2
-                  Text(
-                    AppStrings.adminDashboardHeading,
-                    style: TextStyle(
-                      color: _isDarkMode ? Colors.white : AppColors.textDark,
-                      fontSize: isMobile ? 22 : 24,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.4,
-                    ),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.only(
+              left: isMobile ? 16 : 32,
+              right: isMobile ? 16 : 32,
+              top: isMobile ? 20 : 28,
+              bottom: isMobile ? 88 : 32,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppStrings.adminDashboardHeading,
+                  style: TextStyle(
+                    color: _isDarkMode ? Colors.white : AppColors.textDark,
+                    fontSize: isMobile ? 22 : 24,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.4,
                   ),
-
-                  SizedBox(height: isMobile ? 18 : 24),
-
-                  // Cards Content View
-                  if (state.isLoading)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 60),
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.primaryOrange,
-                        ),
+                ),
+                SizedBox(height: isMobile ? 18 : 24),
+                if (state.isLoading)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 60),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryOrange,
                       ),
-                    )
-                  else if (state.isFailure)
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 40),
-                        child: Column(
-                          children: [
-                            const Icon(
-                              Icons.error_outline_rounded,
-                              size: 40,
-                              color: AppColors.error,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              state.errorMessage ??
-                                  'Failed to load admin dashboard',
-                              style: const TextStyle(
-                                color: AppColors.textGray,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () {
-                                context
-                                    .read<AdminDashboardBloc>()
-                                    .add(const LoadAdminStatsEvent());
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryOrange,
-                                foregroundColor: Colors.white,
-                              ),
-                              child: const Text('Retry'),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  else
-                    AdminDashboardGrid(
-                      items: state.items,
-                      isDarkMode: _isDarkMode,
-                      onItemTap: (item) => _handleCardTap(context, item),
                     ),
-                ],
-              ),
+                  )
+                else if (state.isFailure)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      child: Column(
+                        children: [
+                          const Icon(
+                            Icons.error_outline_rounded,
+                            size: 40,
+                            color: AppColors.error,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            state.errorMessage ??
+                                'Failed to load admin dashboard',
+                            style: const TextStyle(
+                              color: AppColors.textGray,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              context
+                                  .read<AdminDashboardBloc>()
+                                  .add(const LoadAdminStatsEvent());
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryOrange,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else
+                  AdminDashboardGrid(
+                    items: state.items,
+                    isDarkMode: _isDarkMode,
+                    onItemTap: (item) => _handleCardTap(context, item),
+                  ),
+              ],
             ),
           ),
         );

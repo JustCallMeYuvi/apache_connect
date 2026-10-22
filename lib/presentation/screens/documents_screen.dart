@@ -805,7 +805,6 @@
 //   }
 // }
 
-import 'package:apache_connect/presentation/bloc/login/login_bloc.dart';
 import 'package:apache_connect/presentation/widgets/excel_editor_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -814,7 +813,6 @@ import '../../domain/entities/app_document.dart';
 import '../bloc/documents/documents_bloc.dart';
 import '../bloc/documents/documents_event.dart';
 import '../bloc/documents/documents_state.dart';
-import '../widgets/app_scaffold.dart';
 
 import '../widgets/document_category_dropdown.dart';
 import '../widgets/document_empty_preview.dart';
@@ -834,7 +832,7 @@ class DocumentsScreen extends StatefulWidget {
 class _DocumentsScreenState extends State<DocumentsScreen> {
   // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
-  bool _isDarkMode = false;
+  final bool _isDarkMode = false;
 
   bool _isExcelEditing = false;
   String? _editingDocumentId;
@@ -1105,8 +1103,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       builder: (context, state) {
         final documents = state.filteredDocuments;
         final selectedDoc = state.selectedDocument;
-        final loginState = context.read<LoginBloc>().state;
-        final user = loginState.authenticatedUser;
+        // final loginState = context.read<LoginBloc>().state;
+        // final user = loginState.authenticatedUser;
 
         // Auto-select first document on desktop if none selected to match Screenshot 1
         if (!isMobile &&
@@ -1120,50 +1118,76 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           });
         }
 
-        return AppScaffold(
-          title: AppStrings.documentsScreenTitle,
-          activeNavIndex: 2,
-          isDarkMode: _isDarkMode,
-          employeeName:
-              user?.displayName ?? user?.username ?? 'Unknown Employee',
-          employeeNo: user?.id ?? 'Unknown ID',
-          onThemeToggle: () {
-            setState(() => _isDarkMode = !_isDarkMode);
-          },
-          onNotificationPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Notifications (6 unread)'),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
-          onProfilePressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Logged in as Syed Imran (Admin)'),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
-          // onNavItemSelected: _handleNavigation,
-          onNavItemSelected: widget.onNavItemSelected,
-          floatingActionButton: isMobile && selectedDoc == null
-              ? FloatingActionButton(
-                  // heroTag: 'documentsUploadFab',
-                  heroTag: null,
+        // return AppScaffold(
+        //   title: AppStrings.documentsScreenTitle,
+        //   activeNavIndex: 2,
+        //   isDarkMode: _isDarkMode,
+        //   employeeName:
+        //       user?.displayName ?? user?.username ?? 'Unknown Employee',
+        //   employeeNo: user?.id ?? 'Unknown ID',
+        //   onThemeToggle: () {
+        //     setState(() => _isDarkMode = !_isDarkMode);
+        //   },
+        //   onNotificationPressed: () {
+        //     ScaffoldMessenger.of(context).showSnackBar(
+        //       const SnackBar(
+        //         content: Text('Notifications (6 unread)'),
+        //         behavior: SnackBarBehavior.floating,
+        //       ),
+        //     );
+        //   },
+        //   onProfilePressed: () {
+        //     ScaffoldMessenger.of(context).showSnackBar(
+        //       const SnackBar(
+        //         content: Text('Logged in as Syed Imran (Admin)'),
+        //         behavior: SnackBarBehavior.floating,
+        //       ),
+        //     );
+        //   },
+        //   // onNavItemSelected: _handleNavigation,
+        //   onNavItemSelected: widget.onNavItemSelected,
+        //   floatingActionButton: isMobile && selectedDoc == null
+        //       ? FloatingActionButton(
+        //           // heroTag: 'documentsUploadFab',
+        //           heroTag: null,
+        //           onPressed: () => _showUploadDialog(context),
+        //           backgroundColor: const Color(0xFFDE5227),
+        //           foregroundColor: Colors.white,
+        //           elevation: 6,
+        //           shape: RoundedRectangleBorder(
+        //               borderRadius: BorderRadius.circular(16)),
+        //           child: const Icon(Icons.file_upload_outlined, size: 24),
+        //         )
+        //       : null,
+        //   body: isMobile
+        //       ? _buildMobileContent(context, state, documents, selectedDoc)
+        //       : _buildDesktopContent(context, state, documents, selectedDoc),
+        // );
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: isMobile
+                  ? _buildMobileContent(context, state, documents, selectedDoc)
+                  : _buildDesktopContent(
+                      context, state, documents, selectedDoc),
+            ),
+            if (isMobile && selectedDoc == null)
+              Positioned(
+                right: 16,
+                bottom: 16,
+                child: FloatingActionButton(
+                  heroTag: 'documentsUploadFab',
                   onPressed: () => _showUploadDialog(context),
                   backgroundColor: const Color(0xFFDE5227),
                   foregroundColor: Colors.white,
                   elevation: 6,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: const Icon(Icons.file_upload_outlined, size: 24),
-                )
-              : null,
-          body: isMobile
-              ? _buildMobileContent(context, state, documents, selectedDoc)
-              : _buildDesktopContent(context, state, documents, selectedDoc),
+                ),
+              ),
+          ],
         );
       },
     );

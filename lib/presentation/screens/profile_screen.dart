@@ -5,7 +5,6 @@ import '../../domain/entities/user.dart';
 import '../bloc/login/login_bloc.dart';
 import '../bloc/login/login_event.dart';
 import '../bloc/login/login_state.dart';
-import '../widgets/app_scaffold.dart';
 import '../widgets/sign_out_dialog.dart';
 
 /// Complete My Profile Screen in ApacheConnect following Clean Architecture & BLoC pattern
@@ -19,7 +18,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool _isDarkMode = false;
+  final bool _isDarkMode = false;
 
   // Personal Info Form Controllers
   late TextEditingController _fullNameController;
@@ -195,81 +194,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context, loginState) {
         final user = loginState.currentUser;
 
-        return AppScaffold(
-          title: 'My profile',
-          // activeNavIndex: -1, // Dedicated Profile View
-          activeNavIndex: 5,
-          onNavItemSelected: widget.onNavItemSelected,
-          isDarkMode: _isDarkMode,
-          notificationCount: isMobile ? 18 : 17,
-          backgroundColor:
-              _isDarkMode ? AppColors.dashboardDarkBg : const Color(0xFFF7F5F0),
-          onThemeToggle: () {
-            setState(() => _isDarkMode = !_isDarkMode);
-          },
-          body: SingleChildScrollView(
-            padding: EdgeInsets.only(
-              left: isMobile ? 16 : 32,
-              right: isMobile ? 16 : 32,
-              top: isMobile ? 20 : 28,
-              bottom: isMobile ? 88 : 36,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Page Heading: "My profile"
-                Text(
-                  'My profile',
-                  style: TextStyle(
-                    color: _isDarkMode ? Colors.white : AppColors.textDark,
-                    fontSize: isMobile ? 22 : 24,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.4,
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Cards: 3 Column on Desktop (Screenshot 3) or Vertical Stack on Mobile (Screenshot 4)
-                if (isMobile)
-                  Column(
-                    children: [
-                      _buildPersonalInfoCard(user),
-                      const SizedBox(height: 20),
-                      _buildChangePasswordCard(),
-                      const SizedBox(height: 20),
-                      _buildSessionCard(user),
-                    ],
-                  )
-                else
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // 1. Personal Information Card
-                      Expanded(
-                        flex: 4,
-                        child: _buildPersonalInfoCard(user),
-                      ),
-                      const SizedBox(width: 20),
-
-                      // 2. Change Password Card
-                      Expanded(
-                        flex: 3,
-                        child: _buildChangePasswordCard(),
-                      ),
-                      const SizedBox(width: 20),
-
-                      // 3. Session Card
-                      Expanded(
-                        flex: 3,
-                        child: _buildSessionCard(user),
-                      ),
-                    ],
-                  ),
-              ],
+        return SingleChildScrollView(
+      padding: EdgeInsets.only(
+        left: isMobile ? 16 : 32,
+        right: isMobile ? 16 : 32,
+        top: isMobile ? 20 : 28,
+        bottom: isMobile ? 88 : 36,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'My profile',
+            style: TextStyle(
+              color: _isDarkMode ? Colors.white : AppColors.textDark,
+              fontSize: isMobile ? 22 : 24,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.4,
             ),
           ),
-        );
+          const SizedBox(height: 24),
+
+          if (isMobile)
+            Column(
+              children: [
+                _buildPersonalInfoCard(user),
+                const SizedBox(height: 20),
+                _buildChangePasswordCard(),
+                const SizedBox(height: 20),
+                _buildSessionCard(user),
+              ],
+            )
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: _buildPersonalInfoCard(user),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  flex: 3,
+                  child: _buildChangePasswordCard(),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  flex: 3,
+                  child: _buildSessionCard(user),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
       },
     );
   }

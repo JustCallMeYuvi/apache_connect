@@ -507,7 +507,6 @@
 //   }
 // }
 
-import 'package:apache_connect/presentation/bloc/login/login_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants/app_colors.dart';
@@ -516,7 +515,6 @@ import '../../domain/entities/chat_conversation.dart';
 import '../bloc/messages/messages_bloc.dart';
 import '../bloc/messages/messages_event.dart';
 import '../bloc/messages/messages_state.dart';
-import '../widgets/app_scaffold.dart';
 import '../widgets/chat_conversation_view.dart';
 import '../widgets/chat_empty_view.dart';
 import '../widgets/chat_filter_tabs.dart';
@@ -536,7 +534,7 @@ class MessagesScreen extends StatefulWidget {
 class _MessagesScreenState extends State<MessagesScreen> {
   // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
-  bool _isDarkMode = false;
+  final bool _isDarkMode = false;
 
   @override
   void initState() {
@@ -578,53 +576,76 @@ class _MessagesScreenState extends State<MessagesScreen> {
       builder: (context, state) {
         // final conversations = state.filteredConversations;
         final selectedConv = state.selectedConversation;
-        final loginState = context.read<LoginBloc>().state;
-        final user = loginState.authenticatedUser;
-        return AppScaffold(
-          title: AppStrings.messagesTitle,
-          activeNavIndex: 1,
-          //           employeeName: authenticatedUser.name,
-          // employeeNo: authenticatedUser.id,
-          employeeName:
-              user?.displayName ?? user?.username ?? 'Unknown Employee',
-          employeeNo: user?.id ?? 'Unknown ID',
+        // final loginState = context.read<LoginBloc>().state;
+        // final user = loginState.authenticatedUser;
+        // return AppScaffold(
+        //   title: AppStrings.messagesTitle,
+        //   activeNavIndex: 1,
+        //   //           employeeName: authenticatedUser.name,
+        //   // employeeNo: authenticatedUser.id,
+        //   employeeName:
+        //       user?.displayName ?? user?.username ?? 'Unknown Employee',
+        //   employeeNo: user?.id ?? 'Unknown ID',
 
-          onNavItemSelected: widget.onNavItemSelected,
-          isDarkMode: _isDarkMode,
-          onThemeToggle: () {
-            setState(() => _isDarkMode = !_isDarkMode);
-          },
-          onNotificationPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Notifications (6 unread)'),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
-          onProfilePressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Logged in as Syed Imran (Admin)'),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
-          floatingActionButton: isMobile && selectedConv == null
-              ? FloatingActionButton(
-                  //  heroTag: 'messagesFab',
-                  heroTag: null,
+        //   onNavItemSelected: widget.onNavItemSelected,
+        //   isDarkMode: _isDarkMode,
+        //   onThemeToggle: () {
+        //     setState(() => _isDarkMode = !_isDarkMode);
+        //   },
+        //   onNotificationPressed: () {
+        //     ScaffoldMessenger.of(context).showSnackBar(
+        //       const SnackBar(
+        //         content: Text('Notifications (6 unread)'),
+        //         behavior: SnackBarBehavior.floating,
+        //       ),
+        //     );
+        //   },
+        //   onProfilePressed: () {
+        //     ScaffoldMessenger.of(context).showSnackBar(
+        //       const SnackBar(
+        //         content: Text('Logged in as Syed Imran (Admin)'),
+        //         behavior: SnackBarBehavior.floating,
+        //       ),
+        //     );
+        //   },
+        //   floatingActionButton: isMobile && selectedConv == null
+        //       ? FloatingActionButton(
+        //           //  heroTag: 'messagesFab',
+        //           heroTag: null,
+        //           onPressed: () => _showNewGroupDialog(context),
+        //           backgroundColor: AppColors.primaryOrange,
+        //           foregroundColor: Colors.white,
+        //           elevation: 6,
+        //           shape: const CircleBorder(),
+        //           child: const Icon(Icons.add, size: 28),
+        //         )
+        //       : null,
+        //   body: isMobile
+        //       ? _buildMobileContent(state, selectedConv)
+        //       : _buildDesktopContent(state, selectedConv),
+        // );
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: isMobile
+                  ? _buildMobileContent(state, selectedConv)
+                  : _buildDesktopContent(state, selectedConv),
+            ),
+            if (isMobile && selectedConv == null)
+              Positioned(
+                right: 16,
+                bottom: 16,
+                child: FloatingActionButton(
+                  heroTag: 'messagesFab',
                   onPressed: () => _showNewGroupDialog(context),
                   backgroundColor: AppColors.primaryOrange,
                   foregroundColor: Colors.white,
                   elevation: 6,
                   shape: const CircleBorder(),
                   child: const Icon(Icons.add, size: 28),
-                )
-              : null,
-          body: isMobile
-              ? _buildMobileContent(state, selectedConv)
-              : _buildDesktopContent(state, selectedConv),
+                ),
+              ),
+          ],
         );
       },
     );
