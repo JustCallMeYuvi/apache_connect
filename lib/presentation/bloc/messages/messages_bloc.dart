@@ -9,7 +9,7 @@ import 'messages_state.dart';
 
 class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   final GetConversationsUseCase _getConversationsUseCase;
-  final SendMessageUseCase _sendMessageUseCase;
+  // final SendMessageUseCase _sendMessageUseCase;
   final CreateGroupUseCase _createGroupUseCase;
 
   MessagesBloc({
@@ -17,7 +17,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     required SendMessageUseCase sendMessageUseCase,
     required CreateGroupUseCase createGroupUseCase,
   })  : _getConversationsUseCase = getConversationsUseCase,
-        _sendMessageUseCase = sendMessageUseCase,
+        // _sendMessageUseCase = sendMessageUseCase,
         _createGroupUseCase = createGroupUseCase,
         super(const MessagesState()) {
     on<LoadMessagesEvent>(_onLoadMessages);
@@ -169,38 +169,105 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   //   // Refresh conversations
   //   add(const LoadMessagesEvent());
   // }
- 
- Future<void> _onSendMessage(
-  SendMessageEvent event,
-  Emitter<MessagesState> emit,
-) async {
-  final text = event.text.trim();
 
-  final hasAttachment = event.attachmentName != null &&
-      event.attachmentName!.trim().isNotEmpty;
+//  Future<void> _onSendMessage(
+//   SendMessageEvent event,
+//   Emitter<MessagesState> emit,
+// ) async {
+//   final text = event.text.trim();
 
-  if (text.isEmpty && !hasAttachment) return;
+//   final hasAttachment = event.attachmentName != null &&
+//       event.attachmentName!.trim().isNotEmpty;
 
-  final result = await _sendMessageUseCase.execute(
-    conversationId: event.conversationId,
-    text: text,
-    attachmentName: event.attachmentName,
-    attachmentType: event.attachmentType,
-    attachmentSize: event.attachmentSize,
-    attachmentUrl: event.attachmentUrl,
-    attachmentBytes: event.attachmentBytes,
-  );
+//   if (text.isEmpty && !hasAttachment) return;
 
-  if (result is Failure<void>) {
-    emit(state.copyWith(errorMessage: result.errorMessage));
-    return;
+//   final result = await _sendMessageUseCase.execute(
+//     conversationId: event.conversationId,
+//     text: text,
+//     attachmentName: event.attachmentName,
+//     attachmentType: event.attachmentType,
+//     attachmentSize: event.attachmentSize,
+//     attachmentUrl: event.attachmentUrl,
+//     attachmentBytes: event.attachmentBytes,
+//   );
+
+//   if (result is Failure<void>) {
+//     emit(state.copyWith(errorMessage: result.errorMessage));
+//     return;
+//   }
+
+//   emit(state.copyWith(clearAttachment: true));
+//   add(const LoadMessagesEvent());
+// }
+
+  Future<void> _onSendMessage(
+    SendMessageEvent event,
+    Emitter<MessagesState> emit,
+  ) async {
+    final text = event.text.trim();
+
+    final hasAttachment =
+        event.attachmentName != null && event.attachmentName!.trim().isNotEmpty;
+
+    if (text.isEmpty && !hasAttachment) return;
+
+    final conversationId = event.conversationId;
+
+    final now = DateTime.now();
+    final hour = now.hour % 12 == 0 ? 12 : now.hour % 12;
+    final minute = now.minute.toString().padLeft(2, '0');
+    final period = now.hour >= 12 ? 'PM' : 'AM';
+    final timestamp = '$hour:$minute $period';
+
+    final updatedConversations = state.allConversations.map((conversation) {
+      if (conversation.id != conversationId) {
+        return conversation;
+      }
+
+      final newMessage = ChatMessage(
+        id: now.microsecondsSinceEpoch.toString(),
+        senderName: 'Yuvaraj',
+        text: text,
+        timestamp: timestamp,
+        isMe: true,
+        attachmentName: event.attachmentName,
+        attachmentType: event.attachmentType,
+        attachmentSize: event.attachmentSize,
+        attachmentUrl: event.attachmentUrl,
+        attachmentBytes: event.attachmentBytes == null
+            ? null
+            : List<int>.unmodifiable(event.attachmentBytes!),
+      );
+
+      final updatedMessages = [
+        ...conversation.messages,
+        newMessage,
+      ];
+
+      final lastMessage = text.isNotEmpty ? text : '📎 ${event.attachmentName}';
+
+      return conversation.copyWith(
+        messages: updatedMessages,
+        lastMessage: lastMessage,
+        time: timestamp,
+      );
+    }).toList();
+
+    final filtered = _applyFilterAndSearch(
+      conversations: updatedConversations,
+      filter: state.selectedFilter,
+      query: state.searchQuery,
+    );
+
+    emit(
+      state.copyWith(
+        allConversations: updatedConversations,
+        filteredConversations: filtered,
+        selectedConversationId: conversationId,
+        clearAttachment: true,
+      ),
+    );
   }
-
-  emit(state.copyWith(clearAttachment: true));
-  add(const LoadMessagesEvent());
-}
-
-
 
   Future<void> _onCreateGroup(
     CreateGroupEvent event,

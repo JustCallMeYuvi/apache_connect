@@ -724,9 +724,12 @@ import 'package:apache_connect/domain/entities/chat_conversation.dart';
 import 'package:apache_connect/presentation/bloc/messages/messages_bloc.dart';
 import 'package:apache_connect/presentation/bloc/messages/messages_event.dart';
 import 'package:apache_connect/presentation/bloc/messages/messages_state.dart';
+import 'package:apache_connect/presentation/widgets/pdf_view.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/foundation.dart';
 
 typedef SendMessageWithAttachment = void Function(
   String message, {
@@ -761,6 +764,366 @@ class ChatConversationView extends StatefulWidget {
 
 class _ChatConversationViewState extends State<ChatConversationView> {
   final TextEditingController _messageController = TextEditingController();
+
+  Future<void> _downloadAttachment({
+    required String name,
+    required List<int> bytes,
+  }) async {
+    try {
+      await FileSaver.instance.saveFile(
+        name: name,
+        bytes: Uint8List.fromList(bytes),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Unable to download $name: $e'),
+        ),
+      );
+    }
+  }
+
+  String _attachmentKind(String? type, String name) {
+    // final extension = (type ?? name.split('.').last).toLowerCase();
+    final extension = name.split('.').last.toLowerCase();
+
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].contains(extension)) {
+      return 'image';
+    }
+
+    if (['mp4', 'mov', 'webm', 'mkv', 'avi'].contains(extension)) {
+      return 'video';
+    }
+
+    if (extension == 'pdf') return 'pdf';
+
+    if (['doc', 'docx'].contains(extension)) {
+      return 'word';
+    }
+
+    if (['xls', 'xlsx', 'csv'].contains(extension)) {
+      return 'excel';
+    }
+
+    return 'file';
+  }
+
+  Widget _buildMessageStatus(int index) {
+    final status = index % 3;
+
+    if (status == 0) {
+      return const Icon(
+        Icons.check_rounded,
+        size: 15,
+        color: Color(0xFF94A3B8),
+      );
+    }
+
+    return Icon(
+      Icons.done_all_rounded,
+      size: 15,
+      color: status == 1 ? const Color(0xFF94A3B8) : const Color(0xFF53BDEB),
+    );
+  }
+
+  void _openPdfPreview({
+    required String name,
+    required List<int> bytes,
+  }) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        final size = MediaQuery.sizeOf(dialogContext);
+
+        return Dialog(
+          insetPadding: const EdgeInsets.all(16),
+          child: SizedBox(
+            width: size.width * 0.9,
+            height: size.height * 0.9,
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                  ),
+                ),
+                const Divider(height: 1),
+                // Expanded(
+                //   child: PdfViewer.data(
+                //     Uint8List.fromList(bytes),
+                //     sourceName: name,
+                //   ),
+                // ),
+                Expanded(
+                  child: PdfAttachmentViewer(
+                    bytes: Uint8List.fromList(bytes),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMessageAttachment({
+    required String name,
+    required String? type,
+    required String? url,
+    required List<int>? bytes,
+    required int? size,
+    required bool isMe,
+    required bool isDark,
+    required Color textColor,
+  }) {
+    final kind = _attachmentKind(type, name);
+
+    final fileBytes = bytes == null ? null : Uint8List.fromList(bytes);
+
+    final foreground = isMe ? Colors.white : textColor;
+
+    final cardColor = isMe
+        ? Colors.white.withValues(alpha: 0.15)
+        : (isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9));
+
+    // IMAGE PREVIEW
+    if (kind == 'image') {
+      Widget image;
+
+      if (fileBytes != null && fileBytes.isNotEmpty) {
+        image = Image.memory(
+          fileBytes,
+          width: 280,
+          height: 200,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => const _AttachmentFallback(),
+        );
+      } else if (url != null && url.isNotEmpty) {
+        image = Image.network(
+          url,
+          width: 280,
+          height: 200,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => const _AttachmentFallback(),
+        );
+      } else {
+        image = const _AttachmentFallback();
+      }
+
+      return GestureDetector(
+        onTap: () {
+          showDialog<void>(
+            context: context,
+            barrierColor: Colors.black87,
+            builder: (dialogContext) {
+              final screenSize = MediaQuery.sizeOf(dialogContext);
+
+              Widget fullImage;
+
+              if (fileBytes != null && fileBytes.isNotEmpty) {
+                fullImage = Image.memory(
+                  fileBytes,
+                  fit: BoxFit.contain,
+                  width: screenSize.width * 0.92,
+                  height: screenSize.height * 0.88,
+                  errorBuilder: (_, __, ___) => const Icon(
+                    Icons.broken_image_outlined,
+                    color: Colors.white,
+                    size: 48,
+                  ),
+                );
+              } else if (url != null && url.isNotEmpty) {
+                fullImage = Image.network(
+                  url,
+                  fit: BoxFit.contain,
+                  width: screenSize.width * 0.92,
+                  height: screenSize.height * 0.88,
+                  errorBuilder: (_, __, ___) => const Icon(
+                    Icons.broken_image_outlined,
+                    color: Colors.white,
+                    size: 48,
+                  ),
+                );
+              } else {
+                fullImage = const Text(
+                  'Image data unavailable',
+                  style: TextStyle(color: Colors.white),
+                );
+              }
+
+              return Dialog(
+                backgroundColor: Colors.black,
+                insetPadding: const EdgeInsets.all(16),
+                child: SizedBox(
+                  width: screenSize.width * 0.92,
+                  height: screenSize.height * 0.88,
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: InteractiveViewer(
+                          minScale: 0.5,
+                          maxScale: 5,
+                          child: Center(child: fullImage),
+                        ),
+                      ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: IconButton(
+                          onPressed: () => Navigator.of(dialogContext).pop(),
+                          icon: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: image,
+        ),
+      );
+    }
+
+    // VIDEO / DOCUMENT ICONS
+    final IconData icon;
+    final Color iconColor;
+
+    switch (kind) {
+      case 'video':
+        icon = Icons.play_circle_fill_rounded;
+        iconColor = Colors.purple;
+        break;
+      case 'audio':
+        icon = Icons.audiotrack_rounded;
+        iconColor = Colors.deepPurple;
+        break;
+      case 'pdf':
+        icon = Icons.picture_as_pdf_rounded;
+        iconColor = Colors.redAccent;
+        break;
+      case 'word':
+        icon = Icons.description_rounded;
+        iconColor = Colors.blue;
+        break;
+      case 'excel':
+        icon = Icons.table_chart_rounded;
+        iconColor = Colors.green;
+        break;
+      default:
+        icon = Icons.insert_drive_file_rounded;
+        iconColor = AppColors.primaryOrange;
+    }
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      // onTap: () {
+      //   if (kind == 'pdf' && fileBytes != null && fileBytes.isNotEmpty) {
+      //     _openPdfPreview(
+      //       name: name,
+      //       bytes: fileBytes,
+      //     );
+      //   } else {
+      //     ScaffoldMessenger.of(context).showSnackBar(
+      //       SnackBar(
+      //         content: Text(
+      //           '$name selected. This file type needs an external viewer or download action.',
+      //         ),
+      //       ),
+      //     );
+      //   }
+      // },
+
+      onTap: () async {
+        if (fileBytes == null || fileBytes.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('File data is unavailable.'),
+            ),
+          );
+          return;
+        }
+
+        if (kind == 'pdf') {
+          _openPdfPreview(
+            name: name,
+            bytes: fileBytes,
+          );
+        } else {
+          await _downloadAttachment(
+            name: name,
+            bytes: fileBytes,
+          );
+        }
+      },
+
+      child: Container(
+        width: 280,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: isMe ? Colors.white : iconColor,
+              size: 34,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: foreground,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12.5,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${size == null ? "File" : "${(size / 1024).toStringAsFixed(1)} KB"}'
+                    ' · ${kind.toUpperCase()}',
+                    style: TextStyle(
+                      color: foreground.withValues(alpha: 0.75),
+                      fontSize: 10.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (kind == 'video')
+              Icon(
+                Icons.play_arrow_rounded,
+                color: foreground,
+                size: 26,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Future<void> _pickAttachment() async {
     final bloc = context.read<MessagesBloc>();
@@ -975,80 +1338,114 @@ class _ChatConversationViewState extends State<ChatConversationView> {
                               ),
 
                             // Attachment displayed in the message
+                            // if (msg.attachmentName != null &&
+                            //     msg.attachmentName!.trim().isNotEmpty) ...[
+                            //   const SizedBox(height: 8),
+                            //   Container(
+                            //     padding: const EdgeInsets.all(10),
+                            //     decoration: BoxDecoration(
+                            //       color: msg.isMe
+                            //           ? Colors.white.withValues(
+                            //               alpha: 0.15,
+                            //             )
+                            //           : (isDark
+                            //               ? const Color(0xFF334155)
+                            //               : const Color(0xFFF1F5F9)),
+                            //       borderRadius: BorderRadius.circular(8),
+                            //     ),
+                            //     child: Row(
+                            //       mainAxisSize: MainAxisSize.min,
+                            //       children: [
+                            //         Icon(
+                            //           Icons.insert_drive_file_rounded,
+                            //           color: msg.isMe
+                            //               ? Colors.white
+                            //               : AppColors.primaryOrange,
+                            //         ),
+                            //         const SizedBox(width: 8),
+                            //         Flexible(
+                            //           child: Column(
+                            //             crossAxisAlignment:
+                            //                 CrossAxisAlignment.start,
+                            //             children: [
+                            //               ConstrainedBox(
+                            //                 constraints: const BoxConstraints(
+                            //                   maxWidth: 230,
+                            //                 ),
+                            //                 child: Text(
+                            //                   msg.attachmentName!,
+                            //                   maxLines: 2,
+                            //                   overflow: TextOverflow.ellipsis,
+                            //                   style: TextStyle(
+                            //                     color: msg.isMe
+                            //                         ? Colors.white
+                            //                         : textColor,
+                            //                     fontSize: 12,
+                            //                     fontWeight: FontWeight.w600,
+                            //                   ),
+                            //                 ),
+                            //               ),
+                            //               if (msg.attachmentSize != null)
+                            //                 Text(
+                            //                   '${(msg.attachmentSize! / 1024).toStringAsFixed(1)} KB',
+                            //                   style: TextStyle(
+                            //                     color: msg.isMe
+                            //                         ? Colors.white70
+                            //                         : const Color(
+                            //                             0xFF94A3B8,
+                            //                           ),
+                            //                     fontSize: 10,
+                            //                   ),
+                            //                 ),
+                            //             ],
+                            //           ),
+                            //         ),
+                            //       ],
+                            //     ),
+                            //   ),
+                            // ],
+
                             if (msg.attachmentName != null &&
                                 msg.attachmentName!.trim().isNotEmpty) ...[
                               const SizedBox(height: 8),
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: msg.isMe
-                                      ? Colors.white.withValues(
-                                          alpha: 0.15,
-                                        )
-                                      : (isDark
-                                          ? const Color(0xFF334155)
-                                          : const Color(0xFFF1F5F9)),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.insert_drive_file_rounded,
-                                      color: msg.isMe
-                                          ? Colors.white
-                                          : AppColors.primaryOrange,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Flexible(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          ConstrainedBox(
-                                            constraints: const BoxConstraints(
-                                              maxWidth: 230,
-                                            ),
-                                            child: Text(
-                                              msg.attachmentName!,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                color: msg.isMe
-                                                    ? Colors.white
-                                                    : textColor,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ),
-                                          if (msg.attachmentSize != null)
-                                            Text(
-                                              '${(msg.attachmentSize! / 1024).toStringAsFixed(1)} KB',
-                                              style: TextStyle(
-                                                color: msg.isMe
-                                                    ? Colors.white70
-                                                    : const Color(
-                                                        0xFF94A3B8,
-                                                      ),
-                                                fontSize: 10,
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              _buildMessageAttachment(
+                                name: msg.attachmentName!,
+                                type: msg.attachmentType,
+                                url: msg.attachmentUrl,
+                                bytes: msg.attachmentBytes,
+                                // bytes: null,
+                                size: msg.attachmentSize,
+                                isMe: msg.isMe,
+                                isDark: isDark,
+                                textColor: textColor,
                               ),
                             ],
 
                             const SizedBox(height: 3),
-                            Text(
-                              msg.timestamp,
-                              style: const TextStyle(
-                                color: Color(0xFF94A3B8),
-                                fontSize: 10,
-                              ),
+                            // Text(
+                            //   msg.timestamp,
+                            //   style: const TextStyle(
+                            //     color: Color(0xFF94A3B8),
+                            //     fontSize: 10,
+                            //   ),
+                            // ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  msg.timestamp,
+                                  style: TextStyle(
+                                    color: msg.isMe
+                                        ? Colors.white70
+                                        : const Color(0xFF94A3B8),
+                                    fontSize: 10,
+                                  ),
+                                ),
+                                if (msg.isMe) ...[
+                                  const SizedBox(width: 4),
+                                  _buildMessageStatus(index),
+                                ],
+                              ],
                             ),
                           ],
                         ),
@@ -1188,6 +1585,25 @@ class _ChatConversationViewState extends State<ChatConversationView> {
           ],
         );
       },
+    );
+  }
+}
+
+class _AttachmentFallback extends StatelessWidget {
+  const _AttachmentFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 280,
+      height: 160,
+      color: const Color(0xFFE2E8F0),
+      alignment: Alignment.center,
+      child: const Icon(
+        Icons.broken_image_outlined,
+        size: 42,
+        color: Color(0xFF64748B),
+      ),
     );
   }
 }

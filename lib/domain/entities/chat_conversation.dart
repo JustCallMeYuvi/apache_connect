@@ -33,6 +33,7 @@ class ChatMessage extends Equatable {
   final String? attachmentType;
   final int? attachmentSize;
   final String? attachmentUrl;
+  final List<int>? attachmentBytes;
 
   const ChatMessage({
     required this.id,
@@ -44,6 +45,7 @@ class ChatMessage extends Equatable {
     this.attachmentType,
     this.attachmentSize,
     this.attachmentUrl,
+    this.attachmentBytes,
   });
 
   bool get hasAttachment =>
@@ -70,8 +72,10 @@ class ChatMessage extends Equatable {
         attachmentType,
         attachmentSize,
         attachmentUrl,
+               attachmentBytes,
       ];
 }
+
 class ChatConversation extends Equatable {
   final String id;
   final String name;
