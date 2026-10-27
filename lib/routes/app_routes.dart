@@ -5,6 +5,7 @@ import 'package:apache_connect/presentation/screens/main_shell_screen.dart';
 import 'package:apache_connect/presentation/screens/messages_screen.dart';
 import 'package:apache_connect/presentation/screens/notifications_screen.dart';
 import 'package:apache_connect/presentation/screens/profile_screen.dart';
+import 'package:apache_connect/presentation/screens/users_screen.dart';
 import 'package:flutter/material.dart';
 import '../presentation/screens/login_screen.dart';
 
@@ -18,19 +19,20 @@ class AppRoutes {
   static const String documents = '/documents';
   static const String main = '/main';
   static const String notifications = '/notifications';
-   static const String adminDashboard = '/admin';
-    static const String profile = '/profile';
+  static const String adminDashboard = '/admin';
+  static const String profile = '/profile';
+  static const String users = '/users';
 
   static Map<String, WidgetBuilder> get routes => {
         login: (context) => const LoginScreen(),
         dashboard: (context) => const DashboardScreen(),
         messages: (context) => const MessagesScreen(),
-                messagesAlias: (context) => const MessagesScreen(),
-
+        messagesAlias: (context) => const MessagesScreen(),
         documents: (context) => const DocumentsScreen(),
         main: (context) => const MainShellScreen(),
         notifications: (context) => const NotificationsScreen(),
-         adminDashboard: (context) => const AdminDashboardScreen(),
-             profile: (context) => const ProfileScreen(),
+        adminDashboard: (context) => const AdminDashboardScreen(),
+        profile: (context) => const ProfileScreen(),
+        users: (context) => const UsersScreen(),
       };
 }

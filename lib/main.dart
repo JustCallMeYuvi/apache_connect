@@ -39,6 +39,7 @@ import 'package:apache_connect/presentation/bloc/admin/admin_dashboard_bloc.dart
 import 'package:apache_connect/presentation/bloc/documents/documents_bloc.dart';
 import 'package:apache_connect/presentation/bloc/messages/messages_bloc.dart';
 import 'package:apache_connect/presentation/bloc/notifications/notifications_bloc.dart';
+import 'package:apache_connect/presentation/bloc/users/users_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -100,6 +101,9 @@ class ApacheConnectApp extends StatelessWidget {
         ),
         BlocProvider<AdminDashboardBloc>(
           create: (context) => di.sl<AdminDashboardBloc>(),
+        ),
+        BlocProvider<UsersBloc>(
+          create: (context) => di.sl<UsersBloc>(),
         ),
       ],
       child: MaterialApp(

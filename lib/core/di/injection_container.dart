@@ -40,20 +40,24 @@ import 'package:apache_connect/data/datasources/admin_remote_data_source.dart';
 import 'package:apache_connect/data/datasources/documents_remote_data_source.dart';
 import 'package:apache_connect/data/datasources/messages_remote_data_source.dart';
 import 'package:apache_connect/data/datasources/notifications_remote_data_source.dart';
+import 'package:apache_connect/data/datasources/users_remote_data_source.dart';
 import 'package:apache_connect/data/repositories/admin_repository_impl.dart';
 import 'package:apache_connect/data/repositories/documents_repository_impl.dart';
 import 'package:apache_connect/data/repositories/messages_repository_impl.dart';
 import 'package:apache_connect/data/repositories/notifications_repository_impl.dart';
+import 'package:apache_connect/data/repositories/users_repository_impl.dart';
 import 'package:apache_connect/domain/repositories/admin_repository.dart';
 import 'package:apache_connect/domain/repositories/documents_repository.dart';
 import 'package:apache_connect/domain/repositories/messages_repository.dart';
 import 'package:apache_connect/domain/repositories/notifications_repository.dart';
+import 'package:apache_connect/domain/repositories/users_repository.dart';
 import 'package:apache_connect/domain/usecases/create_group_usecase.dart';
 import 'package:apache_connect/domain/usecases/delete_notification_usecase.dart';
 import 'package:apache_connect/domain/usecases/get_admin_stats_usecase.dart';
 import 'package:apache_connect/domain/usecases/get_conversations_usecase.dart';
 import 'package:apache_connect/domain/usecases/get_documents_usecase.dart';
 import 'package:apache_connect/domain/usecases/get_notifications_usecase.dart';
+import 'package:apache_connect/domain/usecases/manage_user_usecases.dart';
 import 'package:apache_connect/domain/usecases/mark_all_notifications_read_usecase.dart';
 import 'package:apache_connect/domain/usecases/mark_notification_read_usecase.dart';
 import 'package:apache_connect/domain/usecases/send_message_usecase.dart';
@@ -62,6 +66,7 @@ import 'package:apache_connect/presentation/bloc/admin/admin_dashboard_bloc.dart
 import 'package:apache_connect/presentation/bloc/documents/documents_bloc.dart';
 import 'package:apache_connect/presentation/bloc/messages/messages_bloc.dart';
 import 'package:apache_connect/presentation/bloc/notifications/notifications_bloc.dart';
+import 'package:apache_connect/presentation/bloc/users/users_bloc.dart';
 import 'package:get_it/get_it.dart';
 import '../../data/datasources/auth_remote_data_source.dart';
 import '../../data/datasources/dashboard_remote_data_source.dart';
@@ -86,6 +91,10 @@ Future<void> initDependencies() async {
     dio: DioClient.instance,
   ),
 );
+
+  sl.registerLazySingleton<UsersRemoteDataSource>(
+    () => UsersRemoteDataSourceImpl(),
+  );
   sl.registerLazySingleton<DashboardRemoteDataSource>(
     () => DashboardRemoteDataSourceImpl(),
     
@@ -111,6 +120,11 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(remoteDataSource: sl()),
   );
+
+    sl.registerLazySingleton<UsersRepository>(
+    () => UsersRepositoryImpl(remoteDataSource: sl()),
+  );
+
   sl.registerLazySingleton<DashboardRepository>(
     () => DashboardRepositoryImpl(remoteDataSource: sl()),
   );
@@ -169,6 +183,30 @@ Future<void> initDependencies() async {
     () => GetAdminStatsUseCase(sl()),
   );
 
+
+
+  sl.registerLazySingleton<GetUsersUseCase>(
+    () => GetUsersUseCase(sl()),
+  );
+  sl.registerLazySingleton<CreateUserUseCase>(
+    () => CreateUserUseCase(sl()),
+  );
+  sl.registerLazySingleton<UpdateUserUseCase>(
+    () => UpdateUserUseCase(sl()),
+  );
+  sl.registerLazySingleton<ToggleUserStatusUseCase>(
+    () => ToggleUserStatusUseCase(sl()),
+  );
+  sl.registerLazySingleton<DeleteUserUseCase>(
+    () => DeleteUserUseCase(sl()),
+  );
+  sl.registerLazySingleton<GetFactoriesUseCase>(
+    () => GetFactoriesUseCase(sl()),
+  );
+  sl.registerLazySingleton<GetEmployeesByFactoryUseCase>(
+    () => GetEmployeesByFactoryUseCase(sl()),
+  );
+
   // 4. BLoCs (Factory so fresh state is maintained per session)
   sl.registerFactory<LoginBloc>(
     () => LoginBloc(loginUseCase: sl()),
@@ -205,6 +243,19 @@ Future<void> initDependencies() async {
     sl.registerFactory<AdminDashboardBloc>(
     () => AdminDashboardBloc(
       getAdminStatsUseCase: sl(),
+    ),
+  );
+
+  
+  sl.registerFactory<UsersBloc>(
+    () => UsersBloc(
+      getUsersUseCase: sl(),
+      createUserUseCase: sl(),
+      updateUserUseCase: sl(),
+      toggleUserStatusUseCase: sl(),
+      deleteUserUseCase: sl(),
+      getFactoriesUseCase: sl(),
+      getEmployeesByFactoryUseCase: sl(),
     ),
   );
 }
